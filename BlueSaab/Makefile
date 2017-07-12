@@ -46,8 +46,10 @@ PROJECT := BlueSaab
 ###############################################################################
 # Objects and Paths
 
-OBJECTS += SaabCan.o
 OBJECTS += main.o
+OBJECTS += RN52driver.o
+OBJECTS += SaabCan.o
+OBJECTS += Scroller.o
 
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/stm32f1xx_hal_smartcard.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/PeripheralPins.o
