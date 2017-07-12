@@ -1,0 +1,2 @@
+[ui]
+ignore.local = .hg/hgignore
