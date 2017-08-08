@@ -29,7 +29,8 @@
  *
  * Here are some examples:
  * @code
- * ATCmdParser at = ATCmdParser(serial, "\r\n");
+ * UARTSerial serial = UARTSerial(D1, D0);
+ * ATCmdParser at = ATCmdParser(&serial, "\r\n");
  * int value;
  * char buffer[100];
  *
@@ -44,7 +45,7 @@
 
 namespace mbed {
 
-class ATCmdParser
+class ATCmdParser : private NonCopyable<ATCmdParser>
 {
 private:
     // File handle
@@ -69,11 +70,6 @@ private:
         oob *next;
     };
     oob *_oobs;
-
-    // Prohibiting use of of copy constructor
-    ATCmdParser(const ATCmdParser &);
-    // Prohibiting copy assignment Operator
-    ATCmdParser &operator=(const ATCmdParser &);
 
 public:
 

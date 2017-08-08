@@ -25,12 +25,12 @@ CANMessage canTxFrame;
 SaabCan saabCan;
 Serial pcSerial(USBTX, USBRX, 115200);
 
-unsigned long cdcStatusLastSendTime = 0;		// Timer used to ensure we send the CDC status frame in a timely manner
-unsigned long lastIcomingEventTime = 0; 		// Timer used for determining if we should treat current event as, for example, a long press of a button
-bool cdcActive = false; 						// True while our module, the simulated CDC, is active
-bool cdcStatusResendNeeded = false; 			// True if an internal operation has triggered the need to send the CDC status frame as an event
-bool cdcStatusResendDueToCdcCommand = false; 	// True if the need for sending the CDC status frame was triggered by CDC_CONTROL frame (IHU)
-int incomingEventCounter = 0; 					// Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
+unsigned long cdcStatusLastSendTime = 0;						// Timer used to ensure we send the CDC status frame in a timely manner
+unsigned long lastIcomingEventTime = 0; 						// Timer used for determining if we should treat current event as, for example, a long press of a button
+bool cdcActive = false; 										// True while our module, the simulated CDC, is active
+bool cdcStatusResendNeeded = false; 							// True if an internal operation has triggered the need to send the CDC status frame as an event
+bool cdcStatusResendDueToCdcCommand = false; 				// True if the need for sending the CDC status frame was triggered by CDC_CONTROL frame (IHU)
+int incomingEventCounter = 0; 								// Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
 unsigned char cdcPoweronCmd[NODE_STATUS_TX_MSG_SIZE][8] = {
 		{ 0x32, 0x00, 0x00, 0x03, 0x01, 0x02, 0x00, 0x00 },
 		{ 0x42, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00, 0x00 },
@@ -51,7 +51,9 @@ unsigned char cdcPowerdownCmd[NODE_STATUS_TX_MSG_SIZE][8] = {
 };
 
 void SaabCan::initialize() {
-	iBus.frequency(47619);
+	if (iBus.frequency(47619)) {
+		pcSerial.printf("CAN initialized\r\n");
+	}
 }
 
 void SaabCan::printCanRxFrame() {
@@ -68,4 +70,10 @@ void SaabCan::sendCanFrame(int canId, unsigned char *data) {
 		canTxFrame.data[i] = data[i];
 	}
 	iBus.write(canTxFrame);
+}
+
+void SaabCan::handleRxFrame() {
+	if (iBus.read(canRxFrame)) {
+		printCanRxFrame();
+	}
 }

@@ -108,6 +108,14 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed/hal}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed/platform}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtos}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M/TARGET_M3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M/TARGET_M3/TOOLCHAIN_GCC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/targets}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/targets/TARGET_STM}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1768833654" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
@@ -134,6 +142,14 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed/hal}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed/platform}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtos}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M/TARGET_M3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M/TARGET_M3/TOOLCHAIN_GCC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/targets}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/targets/TARGET_STM}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1829408963" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__MBED__=1"/>
@@ -195,6 +211,14 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed/hal}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed/platform}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtos}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M/TARGET_M3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/rtx/TARGET_CORTEX_M/TARGET_M3/TOOLCHAIN_GCC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/targets}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BlueSaab/mbed-rtos/targets/TARGET_STM}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs.1380829866" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__MBED__=1"/>
