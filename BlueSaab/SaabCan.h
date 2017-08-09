@@ -59,6 +59,8 @@ public:
 	void printCanRxFrame();
 	void sendCanFrame(int canId, unsigned char *data);
 	void handleRxFrame();
+	void handleIhuButtons();
+	void handleSteeringWheelButtons();
 };
 
 extern SaabCan saabCan;

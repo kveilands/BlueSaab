@@ -17,11 +17,12 @@
  */
 
 #include "mbed.h"
+#include "rtos.h"
 #include "SaabCan.h"
 
 CAN iBus(PB_8, PB_9);
 CANMessage canRxFrame;
-CANMessage canTxFrame;
+Mail <CANMessage, 16> canFrameQueue;
 SaabCan saabCan;
 Serial pcSerial(USBTX, USBRX, 115200);
 
@@ -49,6 +50,7 @@ unsigned char cdcPowerdownCmd[NODE_STATUS_TX_MSG_SIZE][8] = {
 		{ 0x52, 0x00, 0x00, 0x38, 0x01, 0x00, 0x00, 0x00 },
 		{ 0x62, 0x00, 0x00, 0x38, 0x01, 0x00, 0x00, 0x00 }
 };
+unsigned char soundCmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00};
 
 void SaabCan::initialize() {
 	if (iBus.frequency(47619)) {
@@ -65,15 +67,140 @@ void SaabCan::printCanRxFrame() {
 }
 
 void SaabCan::sendCanFrame(int canId, unsigned char *data) {
-	canTxFrame.id = canId;
-	for (int i = 0; i < canTxFrame.len; i++) {
-		canTxFrame.data[i] = data[i];
+	CANMessage *canTxFrame = canFrameQueue.alloc();
+	canTxFrame->id = canId;
+	for (int i = 0; i < canTxFrame->len; i++) {
+		canTxFrame->data[i] = data[i];
 	}
-	iBus.write(canTxFrame);
+	canFrameQueue.put(canTxFrame);
 }
 
 void SaabCan::handleRxFrame() {
 	if (iBus.read(canRxFrame)) {
-		printCanRxFrame();
+		switch (canRxFrame.id) {
+		case NODE_STATUS_RX_IHU:
+			switch (canRxFrame.data[3] & 0x0F) {
+			case (0x3):
+				// messageSender.sendCanMessage(NODE_STATUS_TX_CDC, cdcPoweronCmd, 4, NODE_STATUS_TX_INTERVAL);
+				break;
+			case (0x2):
+				// messageSender.sendCanMessage(NODE_STATUS_TX_CDC, cdcActiveCmd, 4, NODE_STATUS_TX_INTERVAL);
+				break;
+			case (0x8):
+				// messageSender.sendCanMessage(NODE_STATUS_TX_CDC, cdcPowerdownCmd, 4, NODE_STATUS_TX_INTERVAL);
+				break;
+			}
+			break;
+		case CDC_CONTROL:
+			handleIhuButtons();
+			break;
+		case STEERING_WHEEL_BUTTONS:
+			handleSteeringWheelButtons();
+			break;
+		case DISPLAY_RESOURCE_GRANT:
+			// sidResource.grantReceived(CAN_RxMsg.data);
+			break;
+		case IHU_DISPLAY_RESOURCE_REQ:
+			// sidResource.ihuRequestReceived(CAN_RxMsg.data);
+			break;
+		default:
+			break;
+
+		}
 	}
+}
+
+void SaabCan::handleIhuButtons() {
+	bool event = (canRxFrame.data[0] == 0x80);
+	if ((!event) && (cdcActive)) {
+		// checkCanEvent(1);
+		return;
+	}
+	switch (canRxFrame.data[1]) {
+	case 0x24:
+		cdcActive = true;
+		// sidResource.activate();
+		// BT.bt_reconnect();
+		sendCanFrame(SOUND_REQUEST, soundCmd);
+		break;
+	case 0x14:
+		// sidResource.deactivate();
+		// BT.bt_disconnect();
+		cdcActive = false;
+		break;
+	default:
+		break;
+	}
+	// sidResource.requestDriverBreakthrough();
+	if ((event) && (canRxFrame.data[1] != 0x00)) {
+		if (cdcActive) {
+			switch (canRxFrame.data[1]) {
+			case 0x59: // NXT
+				// BT.bt_play();
+				break;
+			case 0x84: // SEEK button (middle) long press on IHU
+				break;
+			case 0x88: // > 2 second long press of SEEK button (middle) on IHU
+				break;
+			case 0x76: // Random ON/OFF (Long press of CD/RDM button)
+				break;
+			case 0xB1: // Pause ON
+				// BT.bt_play();
+				break;
+			case 0xB0: // Pause OFF
+				// BT.bt_play();
+				break;
+			case 0x35: // Track +
+				// BT.bt_next();
+				break;
+			case 0x36: // Track -
+				// BT.bt_prev();
+				break;
+			case 0x68: // IHU buttons "1-6"
+				switch (canRxFrame.data[2]) {
+				case 0x01:
+					// BT.bt_volup();
+					break;
+				case 0x02:
+					// BT.bt_set_maxvol();
+					break;
+				case 0x03:
+					// BT.bt_reconnect();
+					break;
+				case 0x04:
+					// BT.bt_voldown();
+					break;
+				case 0x06:
+					// BT.bt_disconnect();
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		cdcStatusResendNeeded = true;
+		cdcStatusResendDueToCdcCommand = true;
+	}
+}
+
+void SaabCan::handleSteeringWheelButtons() {
+    if (cdcActive) {
+        // checkCanEvent(4);
+        switch (canRxFrame.data[2]) {
+            case 0x04: // NXT button on wheel
+                //BT.bt_play();
+                break;
+            case 0x10: // Seek+ button on wheel
+                //BT.bt_next();
+                break;
+            case 0x08: // Seek- button on wheel
+                //BT.bt_prev();
+                break;
+            default:
+                break;
+        }
+    }
 }
