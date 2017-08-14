@@ -56,6 +56,7 @@ void SaabCan::initialize() {
 	if (iBus.frequency(47619)) {
 		pcSerial.printf("CAN initialized\r\n");
 	}
+	iBus.attach(callback(this,&SaabCan::onRx), mbed::CAN::RxIrq);
 }
 
 void SaabCan::printCanRxFrame() {
@@ -203,4 +204,12 @@ void SaabCan::handleSteeringWheelButtons() {
                 break;
         }
     }
+}
+
+extern DigitalOut myLED;
+
+void SaabCan::onRx() {
+	myLED = 1;
+	if (iBus.read(canRxFrame)) {
+	}
 }

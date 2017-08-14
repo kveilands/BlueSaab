@@ -61,6 +61,8 @@ public:
 	void handleRxFrame();
 	void handleIhuButtons();
 	void handleSteeringWheelButtons();
+
+	void onRx();
 };
 
 extern SaabCan saabCan;
