@@ -19,6 +19,8 @@
 #ifndef SAABCAN_H_
 #define SAABCAN_H_
 
+#include "rtos.h"
+
 /**
  * TX frames:
  */
@@ -53,7 +55,15 @@
 #define LAST_EVENT_IN_TIMEOUT		3000 		// Milliseconds
 #define NODE_STATUS_TX_MSG_SIZE		4 			// Decimal; defines how many frames do we need to reply with to '6A1'
 
+struct FrameCallback {
+	unsigned int id;
+	Callback<void(CANMessage&)> callBack;
+	FrameCallback(): id(0) {}
+};
+
 class SaabCan {
+	enum {CAN_MAX_CALLBACKS = 10};
+	FrameCallback callBacks[CAN_MAX_CALLBACKS];
 public:
 	void initialize();
 	void printCanRxFrame();
@@ -63,6 +73,7 @@ public:
 	void handleSteeringWheelButtons();
 
 	void onRx();
+	void attach(unsigned int canId, Callback<void(CANMessage&)>);
 };
 
 extern SaabCan saabCan;

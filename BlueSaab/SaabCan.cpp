@@ -210,6 +210,21 @@ extern DigitalOut myLED;
 
 void SaabCan::onRx() {
 	myLED = 1;
-	if (iBus.read(canRxFrame)) {
+	while (iBus.read(canRxFrame)) {
+		for(int i=0; i<CAN_MAX_CALLBACKS; i++) {
+			if(callBacks[i].id == canRxFrame.id) {
+				callBacks[i].callBack.call(canRxFrame);
+			}
+		}
+	}
+}
+
+void SaabCan::attach(unsigned int canId, Callback<void(CANMessage&)> callBack) {
+	for(int i=0; i<CAN_MAX_CALLBACKS; i++) {
+		if(callBacks[i].id == 0) {
+			callBacks[i].id = canId;
+			callBacks[i].callBack = callBack;
+			break;
+		}
 	}
 }

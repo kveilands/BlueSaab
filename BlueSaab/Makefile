@@ -50,6 +50,7 @@ OBJECTS += main.o
 OBJECTS += RN52driver.o
 OBJECTS += SaabCan.o
 OBJECTS += Scroller.o
+OBJECTS += Buttons.o
 
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o
