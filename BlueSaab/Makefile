@@ -51,6 +51,8 @@ OBJECTS += RN52driver.o
 OBJECTS += SaabCan.o
 OBJECTS += Scroller.o
 OBJECTS += Buttons.o
+OBJECTS += CDCStatus.o
+OBJECTS += MessageSender.o
 
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o
