@@ -2,10 +2,11 @@
 #define MESSAGESENDER_H_
 
 #include <rtos.h>
+#include "SerialLog.h"
 
 class MessageSender {
-	int frameId;
-	unsigned char (*frames)[8];
+	const int frameId;
+	const unsigned char (*frames)[8];
 	int frameCount;
 	uint32_t interval;
 	Thread thread;
@@ -13,8 +14,12 @@ class MessageSender {
 	void run();
 public:
 	MessageSender(int frameId, unsigned char frames[][8], int frameCount, uint32_t interval)
-		:frameId(frameId), frames(frames), frameCount(frameCount), interval(interval)
-	{}
+		:frameId(frameId), frames(frames), frameCount(frameCount), interval(interval),
+		 thread(osPriorityNormal, 768)
+	{
+		thread.start(callback(this, &MessageSender::run));
+		getLog()->registerThread("MessageSender::run", &thread);
+	}
 	void send();
 };
 

@@ -23,13 +23,36 @@ unsigned char cdcPowerdownCmd[NODE_STATUS_TX_MSG_SIZE][8] = {
 		{ 0x62, 0x00, 0x00, 0x38, 0x01, 0x00, 0x00, 0x00 }
 };
 
-MessageSender cdcPoweronCmdSender(NODE_STATUS_TX_CDC,cdcPoweronCmd, 4, NODE_STATUS_TX_INTERVAL);
+unsigned char soundCmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00};
+
+//MessageSender cdcPoweronCmdSender(NODE_STATUS_TX_CDC,cdcPoweronCmd, 4, NODE_STATUS_TX_INTERVAL);
 MessageSender cdcActiveCmdSender(NODE_STATUS_TX_CDC, cdcActiveCmd, 4, NODE_STATUS_TX_INTERVAL);
-MessageSender cdcPowerdownCmdSender(NODE_STATUS_TX_CDC, cdcPowerdownCmd, 4, NODE_STATUS_TX_INTERVAL);
+//MessageSender cdcPowerdownCmdSender(NODE_STATUS_TX_CDC, cdcPowerdownCmd, 4, NODE_STATUS_TX_INTERVAL);
 
 void CDCStatus::initialize() {
 	saabCan.attach(NODE_STATUS_RX_IHU, callback(this, &CDCStatus::onIhuStatusFrame));
+	saabCan.attach(CDC_CONTROL, callback(this, &CDCStatus::onCDCControlFrame));
+	getLog()->log("CDCStatus::initialize()\r\n");
 	thread.start(callback(this, &CDCStatus::run));
+	getLog()->registerThread("CDCStatus::run", &thread);
+}
+
+extern DigitalOut myLED;
+
+void CDCStatus::onCDCControlFrame(CANMessage& frame) {
+	if (frame.data[0] == 0x80) {
+		switch (frame.data[1]) {
+		case 0x24:
+			cdcActive = true;
+			saabCan.sendCanFrame(SOUND_REQUEST, soundCmd);
+			thread.signal_set(0x2);
+			break;
+		case 0x14:
+			cdcActive = false;
+			thread.signal_set(0x2);
+			break;
+		}
+	}
 }
 
 void CDCStatus::onIhuStatusFrame(CANMessage& frame) {
@@ -37,27 +60,37 @@ void CDCStatus::onIhuStatusFrame(CANMessage& frame) {
      Here be dragons... This part of the code is responsible for causing lots of headache
      We look at the bottom half of 3rd byte of '6A1' frame to determine what the "reply" should be
      */
+//	pcSerial.printf("CDCStatus::onIhuStatusFrame frame.data[3] & 0x0F = %x\r\n", frame.data[3] & 0x0F);
     switch (frame.data[3] & 0x0F){
         case (0x3):
-			cdcPoweronCmdSender.send();
+//			cdcPoweronCmdSender.send();
             break;
         case (0x2):
 			cdcActiveCmdSender.send();
             break;
         case (0x8):
-			cdcPowerdownCmdSender.send();
+//			cdcPowerdownCmdSender.send();
             break;
     }
 }
 
 void CDCStatus::run() {
+	getLog()->log("CDCStatus::run()\r\n");
 	bool cdcStatusResendNeeded = false;
 	bool cdcStatusResendDueToCdcCommand = false;
-	bool cdcActive = true;
 
 	while(1) {
+//		getLog()->log2("CDCStatus::run() loop\r\n");
+		getLog()->log("cdcActive %d\r\n", cdcActive);
 		sendCdcStatus(cdcStatusResendNeeded, cdcStatusResendDueToCdcCommand, cdcActive);
-		Thread::wait(CDC_STATUS_TX_BASETIME);
+		Thread::wait(50);
+		cdcStatusResendNeeded = false;
+		cdcStatusResendDueToCdcCommand = false;
+		osEvent result = Thread::signal_wait(0x2, CDC_STATUS_TX_BASETIME-50);
+		if (result.status == osEventSignal) {
+			cdcStatusResendNeeded = true;
+			cdcStatusResendDueToCdcCommand = true;
+		}
 	}
 }
 

@@ -15,6 +15,8 @@ public:
 		PAUSE_OFF,
 		TRACK_PLUS,
 		TRACK_MINUS,
+		CDC_MODE_ON,
+		CDC_MODE_OFF
 	};
 
 private:

@@ -6,13 +6,15 @@ Buttons::Buttons() {
 }
 
 void Buttons::initialize() {
-	saabCan.attach(CDC_CONTROL, callback(this, &Buttons::onFrame));
+//	saabCan.attach(CDC_CONTROL, callback(this, &Buttons::onFrame));
 }
 
 Buttons::Button decode(unsigned char data1, unsigned char data2) {
 	switch (data1) {
 //	case 0x24:
+//		return Buttons::CDC_MODE_ON;
 //	case 0x14:
+//		return Buttons::CDC_MODE_ON;
 	case 0x59: // NXT
 		return Buttons::NXT;
 	case 0x84: // SEEK button (middle) long press on IHU
@@ -49,7 +51,14 @@ Buttons::Button decode(unsigned char data1, unsigned char data2) {
 }
 
 void Buttons::onFrame(CANMessage& frame) {
+	if (frame.data[0] != 0x80)
+		return;
+
 	Buttons::Button button = decode(frame.data[1], frame.data[2]);
-	if (button != Buttons::NONE)
-		callBack.call(button);
+	if (button != Buttons::NONE) {
+//		callBack.call(button);
+		getLog()->log("Buttons::onFrame button %d", button);
+	} else {
+		getLog()->log("Buttons::onFrame button unknown");
+	}
 }

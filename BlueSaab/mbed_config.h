@@ -23,7 +23,8 @@
 
 // Configuration parameters
 #define MBED_CONF_PLATFORM_STDIO_BAUD_RATE          9600                                          // set by library:platform
-#define CLOCK_SOURCE                                USE_PLL_HSE_EXTC|USE_PLL_HSE_XTAL|USE_PLL_HSI // set by target:NUCLEO_F103RB
+//#define CLOCK_SOURCE                                USE_PLL_HSE_EXTC|USE_PLL_HSE_XTAL|USE_PLL_HSI // set by target:NUCLEO_F103RB
+#define CLOCK_SOURCE                                USE_PLL_HSE_XTAL // set by target:NUCLEO_F103RB
 #define MBED_CONF_PLATFORM_DEFAULT_SERIAL_BAUD_RATE 9600                                          // set by library:platform
 #define CLOCK_SOURCE_USB                            0                                             // set by target:NUCLEO_F103RB
 #define MBED_CONF_PLATFORM_STDIO_FLUSH_AT_EXIT      1                                             // set by library:platform

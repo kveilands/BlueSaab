@@ -46,6 +46,8 @@ PROJECT := BlueSaab
 ###############################################################################
 # Objects and Paths
 
+#OBJECTS += main2.o
+OBJECTS += system_clock.o
 OBJECTS += main.o
 OBJECTS += RN52driver.o
 OBJECTS += SaabCan.o
@@ -53,6 +55,7 @@ OBJECTS += Scroller.o
 OBJECTS += Buttons.o
 OBJECTS += CDCStatus.o
 OBJECTS += MessageSender.o
+OBJECTS += SerialLog.o
 
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o
@@ -162,7 +165,7 @@ OBJECTS += mbed-rtos/rtx/TARGET_CORTEX_M/rt_Timer.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/stm32f1xx_ll_usb.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/stm32f1xx_ll_utils.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/stm_spi_api.o
- SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/system_clock.o
+ #SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/system_clock.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/system_stm32f1xx.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/trng_api.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/us_ticker_16b.o

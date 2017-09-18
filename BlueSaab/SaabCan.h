@@ -20,6 +20,7 @@
 #define SAABCAN_H_
 
 #include "rtos.h"
+#include "SerialLog.h"
 
 /**
  * TX frames:
@@ -63,11 +64,15 @@ struct FrameCallback {
 
 class SaabCan {
 	enum {CAN_MAX_CALLBACKS = 10};
+	Mail <CANMessage, 16> canFrameQueue;
 	FrameCallback callBacks[CAN_MAX_CALLBACKS];
+	Thread send_thread;
+
+	void sendFunc();
 public:
+	SaabCan(): send_thread(osPriorityNormal, 768) {}
 	void initialize();
-	void printCanRxFrame();
-	void sendCanFrame(int canId, unsigned char *data);
+	void sendCanFrame(int canId, const unsigned char *data);
 	void handleRxFrame();
 	void handleIhuButtons();
 	void handleSteeringWheelButtons();
