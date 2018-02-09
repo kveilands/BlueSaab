@@ -4,20 +4,29 @@
 #include "Buttons.h"
 #include "CDCStatus.h"
 #include "MessageSender.h"
+#include "Bluetooth.h"
 
-//DigitalOut myLED (LED1);
-DigitalOut myLED (PA_1);
+//DigitalOut aliveLed (LED1);
+DigitalOut aliveLed (PA_1);
 
-extern MessageSender cdcActiveCmdSender;
+//extern MessageSender cdcActiveCmdSender;
+
+Thread logThread(osPriorityLow, 2048);
 
 int main() {
-	myLED = 1;
+	logThread.start(callback(getLog(),&SerialLog::run));
+	getLog()->registerThread("logThread", &logThread);
 
-	saabCan.initialize();
+	aliveLed = 1;
+
+	saabCan.initialize(47619);
+	bluetooth.initialize();
 	buttons.initialize();
 	cdcStatus.initialize();
 
-	getLog()->run();
+	while (1) {
+		Thread::wait(1000);
+	}
 
 //	while (1) {
 //		Thread::wait(5300);

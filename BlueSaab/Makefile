@@ -46,16 +46,17 @@ PROJECT := BlueSaab
 ###############################################################################
 # Objects and Paths
 
-#OBJECTS += main2.o
-OBJECTS += system_clock.o
 OBJECTS += main.o
-OBJECTS += RN52driver.o
+OBJECTS += system_clock.o
+OBJECTS += SerialLog.o
 OBJECTS += SaabCan.o
+OBJECTS += Bluetooth.o
+OBJECTS += RN52driver.o
+OBJECTS += RN52impl.o
 OBJECTS += Scroller.o
 OBJECTS += Buttons.o
 OBJECTS += CDCStatus.o
 OBJECTS += MessageSender.o
-OBJECTS += SerialLog.o
 
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o

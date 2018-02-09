@@ -1,4 +1,5 @@
 #include "Buttons.h"
+#include "Bluetooth.h"
 
 Buttons buttons;
 
@@ -6,7 +7,7 @@ Buttons::Buttons() {
 }
 
 void Buttons::initialize() {
-//	saabCan.attach(CDC_CONTROL, callback(this, &Buttons::onFrame));
+	saabCan.attach(CDC_CONTROL, callback(this, &Buttons::onFrame));
 }
 
 Buttons::Button decode(unsigned char data1, unsigned char data2) {
@@ -58,6 +59,15 @@ void Buttons::onFrame(CANMessage& frame) {
 	if (button != Buttons::NONE) {
 //		callBack.call(button);
 		getLog()->log("Buttons::onFrame button %d", button);
+		if (button == Buttons::NXT) {
+			bluetooth.play();
+		}
+		if (button == Buttons::TRACK_PLUS) {
+			bluetooth.next();
+		}
+		if (button == Buttons::TRACK_MINUS) {
+			bluetooth.prev();
+		}
 	} else {
 		getLog()->log("Buttons::onFrame button unknown");
 	}

@@ -70,9 +70,11 @@ class SaabCan {
 
 	void sendFunc();
 public:
-	SaabCan(): send_thread(osPriorityNormal, 768) {}
-	void initialize();
+	SaabCan(): send_thread(osPriorityNormal, 512) {}
+	void initialize(int hz);
 	void sendCanFrame(int canId, const unsigned char *data);
+	void sendCanMessage(CANMessage &msg);
+	void sendCanMessage(CANFormat format, unsigned int id, unsigned char len, const char *data);
 	void handleRxFrame();
 	void handleIhuButtons();
 	void handleSteeringWheelButtons();

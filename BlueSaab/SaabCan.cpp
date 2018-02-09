@@ -28,13 +28,27 @@ unsigned long cdcStatusLastSendTime = 0;						// Timer used to ensure we send th
 unsigned long lastIcomingEventTime = 0; 						// Timer used for determining if we should treat current event as, for example, a long press of a button
 int incomingEventCounter = 0; 								// Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
 
-void SaabCan::initialize() {
-	if (iBus.frequency(47619)) {
-		getLog()->log("CAN initialized\r\n");
+void SaabCan::initialize(int hz) {
+	if (iBus.frequency(hz) && iBus.mode(CAN::Normal)) {
+		getLog()->log("CAN OK\r\n");
+	} else {
+		getLog()->log("CAN NOT OK\r\n");
 	}
+
 	iBus.attach(callback(this,&SaabCan::onRx), mbed::CAN::RxIrq);
 	send_thread.start(callback(this, &SaabCan::sendFunc));
 	getLog()->registerThread("SaabCan::sendFunc", &send_thread);
+}
+
+void SaabCan::sendCanMessage(CANMessage &msg) {
+	CANMessage *canTxFrame = new (canFrameQueue.alloc()) CANMessage();
+	*canTxFrame = msg;
+	canFrameQueue.put(canTxFrame);
+}
+
+void SaabCan::sendCanMessage(CANFormat format, unsigned int id, unsigned char len, const char *data) {
+	CANMessage *canTxFrame = new (canFrameQueue.alloc()) CANMessage(format, data, len, CANData, format);
+	canFrameQueue.put(canTxFrame);
 }
 
 void SaabCan::sendCanFrame(int canId, const unsigned char *data) {
@@ -177,7 +191,7 @@ void SaabCan::handleSteeringWheelButtons() {
 //    }
 }
 
-extern DigitalOut myLED;
+extern DigitalOut aliveLed;
 
 void SaabCan::onRx() {
 	while (iBus.read(canRxFrame)) {
@@ -195,12 +209,10 @@ void SaabCan::sendFunc() {
         osEvent evt = canFrameQueue.get();
         if (evt.status == osEventMail) {
         	CANMessage *message = (CANMessage*)evt.value.p;
-        	getLog()->log("%d: iBus.write ", us_ticker_read()/1000);
         	getLog()->logFrame(message);
             iBus.write(*message);
-
             canFrameQueue.free(message);
-        	myLED = !myLED;
+            aliveLed = !aliveLed;
         }
     }
 }
