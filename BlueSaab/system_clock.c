@@ -136,6 +136,7 @@ void SetSysClock(void)
 #endif
     {
 #if ((CLOCK_SOURCE) & USE_PLL_HSE_XTAL)
+    	//SetSysClock_PLL_HSI();
         /* 2- If fail try to start with HSE and external xtal */
         if (SetSysClock_PLL_HSE(0) == 0)
 #endif
