@@ -43,7 +43,7 @@
 #define RN52_SET_DISCOVERY_MASK     "SD,06\r"           // A2DP/AVRCP + SPP profiles
 #define RN52_SET_CONNECTION_MASK    "SK,06\r"           // A2DP/AVRCP + SPP profiles
 #define RN52_SET_COD                "SC,200420\r"       // Sets "CoD" (Class of Device)
-#define RN52_SET_DEVICE_NAME        "SN,BlueSaab\r"     // Broadcasted and shown in audio source's settigns
+#define RN52_SET_DEVICE_NAME        "SN,BlueSaab\r"     // Broadcasted and shown in audio source's settings
 #define RN52_SET_BAUDRATE_9600      "SU,01\r"           // Enables serial communications on RN52 @ 9600bps
 #define RN52_SET_MAXVOL             "SS,0F\r"           // Sets the volume gain to MAX level 15 (default 11)
 #define RN52_SET_EXTENDED_FEATURES  "S%,1084\r"

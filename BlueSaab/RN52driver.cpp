@@ -22,7 +22,6 @@
  * Last modified on: Dec 16, 2016
  */
 
-///#include <Arduino.h>
 #include <ctype.h>
 #include <string.h>
 #include "RN52driver.h"

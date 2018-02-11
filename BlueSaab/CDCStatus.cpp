@@ -38,8 +38,6 @@ void CDCStatus::initialize() {
 	getLog()->registerThread("CDCStatus::run", &thread);
 }
 
-extern DigitalOut myLED;
-
 void CDCStatus::onCDCControlFrame(CANMessage& frame) {
 	if (frame.data[0] == 0x80) {
 		switch (frame.data[1]) {
