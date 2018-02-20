@@ -47,12 +47,12 @@ PROJECT := BlueSaab
 # Objects and Paths
 
 OBJECTS += main.o
-OBJECTS += system_clock.o
-OBJECTS += SerialLog.o
+OBJECTS += common/system_clock.o
+OBJECTS += common/SerialLog.o
 OBJECTS += SaabCan.o
-OBJECTS += Bluetooth.o
-OBJECTS += RN52driver.o
-OBJECTS += RN52impl.o
+OBJECTS += common/Bluetooth.o
+OBJECTS += common/RN52driver.o
+OBJECTS += common/RN52impl.o
 OBJECTS += Scroller.o
 OBJECTS += Buttons.o
 OBJECTS += CDCStatus.o
@@ -174,6 +174,7 @@ OBJECTS += mbed-rtos/rtx/TARGET_CORTEX_M/rt_Timer.o
 
 INCLUDE_PATHS += -I../
 INCLUDE_PATHS += -I../.
+INCLUDE_PATHS += -I../common
 INCLUDE_PATHS += -I../mbed-rtos
 INCLUDE_PATHS += -I../mbed-rtos/rtos
 INCLUDE_PATHS += -I../mbed-rtos/rtx
