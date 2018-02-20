@@ -31,54 +31,55 @@
 
 #define DEBUGMODE  0
 
-unsigned long cmdResponseTimeout = CMD_TIMEOUT; // Abandon command and reset if no response/no valid response received within this period.
+//unsigned long cmdResponseTimeout = CMD_TIMEOUT; // Abandon command and reset if no response/no valid response received within this period.
 
 namespace RN52 {
     
     static int getVal(char c);
     
     RN52driver::RN52driver() :
-    currentCommand(NULL),
+//    currentCommand(NULL),
 	/*mode(DATA), enterCommandMode(false), enterDataMode(false),*/
-	trueMode(tmDATA),
+//	trueMode(tmDATA),
 	state(0), profile(0), a2dpConnected(false),
-    sppConnected(false), streamingAudio(false), sppTxBufferPos(0), cmdRxBufferPos(0), commandQueuePos(0)
+    sppConnected(false), streamingAudio(false)
+//	sppTxBufferPos(0), cmdRxBufferPos(0), commandQueuePos(0)
     {}
     
-    int RN52driver::fromUART(const char c)
-    {
-        //if (mode == DATA && !enterCommandMode) {
-        if (trueMode == tmDATA) {
-            fromSPP(&c, 1);
-            return 1;
-        } else {
-            return parseCmdResponse(&c, 1);
-            
-        }
-    }
-    
-    int RN52driver::fromUART(const char *data, int size)
-    {
-        //if (mode == DATA && !enterCommandMode) {
-        if (trueMode == tmDATA) {
-            fromSPP(data, size);
-        } else {
-            int parsed = parseCmdResponse(data, size);
-            if (parsed < size && parsed > 0) {
-                // Not all UART bytes were processed by the CommandMode parser.
-                // This means there was an END\r\n, so feed the remainder to SPP
-                //if (mode == DATA) {
-                if (trueMode == tmDATA) {
-                    fromSPP(data + parsed, size - parsed);
-                } else {
-                    onError(1, OVERFLOWrn52);
-                    return -1;
-                }
-            }
-        }
-        return size;
-    }
-    
+//    int RN52driver::fromUART(const char c)
+//    {
+//        //if (mode == DATA && !enterCommandMode) {
+//        if (trueMode == tmDATA) {
+//            fromSPP(&c, 1);
+//            return 1;
+//        } else {
+//            return parseCmdResponse(&c, 1);
+//
+//        }
+//    }
+//
+//    int RN52driver::fromUART(const char *data, int size)
+//    {
+//        //if (mode == DATA && !enterCommandMode) {
+//        if (trueMode == tmDATA) {
+//            fromSPP(data, size);
+//        } else {
+//            int parsed = parseCmdResponse(data, size);
+//            if (parsed < size && parsed > 0) {
+//                // Not all UART bytes were processed by the CommandMode parser.
+//                // This means there was an END\r\n, so feed the remainder to SPP
+//                //if (mode == DATA) {
+//                if (trueMode == tmDATA) {
+//                    fromSPP(data + parsed, size - parsed);
+//                } else {
+//                    onError(1, OVERFLOWrn52);
+//                    return -1;
+//                }
+//            }
+//        }
+//        return size;
+//    }
+//
 //    int RN52driver::toSPP(const char c)
 //    {
 //        if(!sppConnected) {
@@ -124,190 +125,190 @@ namespace RN52 {
 //        return size;
 //    }
     
-    static bool isCmd(const char *buffer, const char *cmd) {
-        return strncmp(buffer, cmd, strlen(cmd)) == 0;
-    }
+//    static bool isCmd(const char *buffer, const char *cmd) {
+//        return strncmp(buffer, cmd, strlen(cmd)) == 0;
+//    }
     
-    void RN52driver::abortCurrentCommand() {
-        if (isCmd(currentCommand, RN52_CMD_GET_TRACK_DATA)) {
-            ///scroller.complete_update();
-        }
-        currentCommand = NULL;
-        prepareDataMode();
-    }
+//    void RN52driver::abortCurrentCommand() {
+//        if (isCmd(currentCommand, RN52_CMD_GET_TRACK_DATA)) {
+//            ///scroller.complete_update();
+//        }
+//        currentCommand = NULL;
+//        prepareDataMode();
+//    }
 
-    void RN52driver::trimRightEOL() {
-        for (;;) {
-            int lastCharPos = cmdRxBufferPos - 1;
-            if (lastCharPos < 0)
-                break;
-            if (cmdRxBuffer[lastCharPos] != '\r' && cmdRxBuffer[lastCharPos] != '\n') {
-                // done trimming
-                break;
-            }
-            cmdRxBufferPos = lastCharPos;
-            cmdRxBuffer[cmdRxBufferPos] = 0;
-        }
-    }
+//    void RN52driver::trimRightEOL() {
+//        for (;;) {
+//            int lastCharPos = cmdRxBufferPos - 1;
+//            if (lastCharPos < 0)
+//                break;
+//            if (cmdRxBuffer[lastCharPos] != '\r' && cmdRxBuffer[lastCharPos] != '\n') {
+//                // done trimming
+//                break;
+//            }
+//            cmdRxBufferPos = lastCharPos;
+//            cmdRxBuffer[cmdRxBufferPos] = 0;
+//        }
+//    }
 
     // We have a line in cmdRxBuffer with \r\n at the end. See what we can do.
-    void RN52driver::parseResponseLine()
-    {
-        // TODO handle other responses, depending on the command sent before
-        if (currentCommand == NULL) {
-            cmdRxBuffer[cmdRxBufferPos - 2] = 0;
-        } else if (isCmd(currentCommand, RN52_CMD_QUERY)) {
-            currentCommand = NULL;
-            if (cmdRxBufferPos != 6 || !parseQResponse(cmdRxBuffer)) {
-                queueCommand(RN52_CMD_QUERY);
-            }
-        } else if (isCmd(currentCommand, RN52_CMD_DETAILS)) {
-            if (isCmd(cmdRxBuffer, "BTA=")) {
-                ///Serial.print(cmdRxBuffer + 4);
-                currentCommand = NULL;
-            }
-        } else if (isCmd(currentCommand, RN52_CMD_GET_TRACK_DATA)) {
-            if (isCmd(cmdRxBuffer, "Title=")) {
-                trimRightEOL();
-                ///scroller.set_title(cmdRxBuffer + 6);
-            } else if (isCmd(cmdRxBuffer, "Artist=")) {
-                trimRightEOL();
-                ///scroller.set_artist(cmdRxBuffer + 7);
-                ///scroller.complete_update();
-                currentCommand = NULL;
-            }
-        } else if (isCmd(currentCommand, RN52_CMD_REBOOT)) {
-            currentCommand = NULL;
-        } else {
-            // misc command (AVCRP, connect/disconnect, etc)
-            if (isCmd(cmdRxBuffer, RN52_RX_OK)) {
-                // OK
-            } else if (isCmd(cmdRxBuffer, RN52_RX_ERROR)) {
-                // Error
-            } else if (isCmd(cmdRxBuffer, RN52_RX_WHAT)) {
-                // WTF!?
-            } else {
-                ///Serial.print(F("Current command: "));
-                ///Serial.println(currentCommand);
-                cmdRxBuffer[cmdRxBufferPos - 2] = 0;
-                onError(4, PROTOCOL);
-#if (DEBUGMODE==1)
-                Serial.print(F("Invalid Response: "));
-                Serial.println(cmdRxBuffer);
-//                            debug("Invalid response:");
-//                            debug(cmdRxBuffer);
-#endif
-            }
-            currentCommand = NULL;
-        }
+//    void RN52driver::parseResponseLine()
+//    {
+//        // TODO handle other responses, depending on the command sent before
+//        if (currentCommand == NULL) {
+//            cmdRxBuffer[cmdRxBufferPos - 2] = 0;
+//        } else if (isCmd(currentCommand, RN52_CMD_QUERY)) {
+//            currentCommand = NULL;
+//            if (cmdRxBufferPos != 6 || !parseQResponse(cmdRxBuffer)) {
+//                queueCommand(RN52_CMD_QUERY);
+//            }
+//        } else if (isCmd(currentCommand, RN52_CMD_DETAILS)) {
+//            if (isCmd(cmdRxBuffer, "BTA=")) {
+//                ///Serial.print(cmdRxBuffer + 4);
+//                currentCommand = NULL;
+//            }
+//        } else if (isCmd(currentCommand, RN52_CMD_GET_TRACK_DATA)) {
+//            if (isCmd(cmdRxBuffer, "Title=")) {
+//                trimRightEOL();
+//                ///scroller.set_title(cmdRxBuffer + 6);
+//            } else if (isCmd(cmdRxBuffer, "Artist=")) {
+//                trimRightEOL();
+//                ///scroller.set_artist(cmdRxBuffer + 7);
+//                ///scroller.complete_update();
+//                currentCommand = NULL;
+//            }
+//        } else if (isCmd(currentCommand, RN52_CMD_REBOOT)) {
+//            currentCommand = NULL;
+//        } else {
+//            // misc command (AVCRP, connect/disconnect, etc)
+//            if (isCmd(cmdRxBuffer, RN52_RX_OK)) {
+//                // OK
+//            } else if (isCmd(cmdRxBuffer, RN52_RX_ERROR)) {
+//                // Error
+//            } else if (isCmd(cmdRxBuffer, RN52_RX_WHAT)) {
+//                // WTF!?
+//            } else {
+//                ///Serial.print(F("Current command: "));
+//                ///Serial.println(currentCommand);
+//                cmdRxBuffer[cmdRxBufferPos - 2] = 0;
+//                onError(4, PROTOCOL);
+//#if (DEBUGMODE==1)
+//                Serial.print(F("Invalid Response: "));
+//                Serial.println(cmdRxBuffer);
+////                            debug("Invalid response:");
+////                            debug(cmdRxBuffer);
+//#endif
+//            }
+//            currentCommand = NULL;
+//        }
+//
+//    }
 
-    }
-
-    int RN52driver::parseCmdResponse(const char *data, int size)
-    {
-        int parsed = 0;
-        while (parsed < size) {
-            if (cmdRxBufferPos == CMD_RX_BUFFER_SIZE) {
-                onError(4, OVERFLOWrn52);
-                return -1;
-            }
-
-            // If the incoming line is longer than CMD_RX_BUFFER_SIZE
-            // try to force it to end with \r\n
-            if (cmdRxBufferPos == CMD_RX_BUFFER_SIZE - 1) {
-                // in the last byte accept only \n
-                if (data[parsed] != '\n') {
-                    // drop any other chars
-                    parsed++;
-                    continue;
-                }
-            } else if (cmdRxBufferPos == CMD_RX_BUFFER_SIZE - 2) {
-                // in the byte before that accept \r or \n
-                if (data[parsed] != '\r' && data[parsed] != '\n') {
-                    // drop any other chars
-                    parsed++;
-                    continue;
-                }
-            }
-            
-            cmdRxBuffer[cmdRxBufferPos++] = data[parsed++];
-            //if (mode == DATA) {
-            if (trueMode == tmCOMMAND_REQUESTED) {
-#if (DEBUGMODE==1)
-                Serial.print(F("Data: "));
-                Serial.write(cmdRxBuffer, cmdRxBufferPos);
-                Serial.println(F(""));
-#endif
-                // did not receive CMD\r\n yet
-                if (cmdRxBufferPos == 5) {
-                    if (isCmd(cmdRxBuffer, RN52_CMD_BEGIN)) {
-                        //mode = COMMAND;
-                        //enterCommandMode = false;
-                    	trueMode = tmCOMMAND;
-                        cmdRxBufferPos = 0;
-                    } else {
-                        //toSPP(cmdRxBuffer[0]);
-                        for (int i = 1; i < 5; i++)
-                            cmdRxBuffer[i - 1] = cmdRxBuffer[i];
-                        cmdRxBufferPos--;
-                    }
-                }
-            } else if (cmdRxBufferPos >= 2 &&
-				cmdRxBuffer[cmdRxBufferPos - 1] == '\n' && cmdRxBuffer[cmdRxBufferPos - 2] == '\r') {
-				// this is a line
-#if (DEBUGMODE==1)
-				Serial.print(F("CMD Response: "));
-				Serial.write(cmdRxBuffer, cmdRxBufferPos);
-				Serial.println(F(""));
-#endif
-				if (trueMode == tmDATA_REQUESTED) {
-					if (isCmd(cmdRxBuffer, RN52_CMD_EXIT)) {
-						//mode = DATA;
-						//enterDataMode = false;
-						trueMode = tmDATA;
-
-						cmdRxBufferPos = 0;
-
-						if (commandQueuePos > 0) {
-							// there's outgoing command requests (yet or again)
-							prepareCommandMode();
-						}
-						break;
-					}
-				} else if (trueMode == tmCOMMAND) {
-					parseResponseLine();
-				}
-
-				cmdRxBufferPos = 0;
-            }
-        }
-
-
-        //if (mode == COMMAND && !enterDataMode) {
-        if (trueMode == tmCOMMAND) {
-            if (currentCommand == NULL) {
-                if (commandQueuePos > 0) {
-                    // send next command
-                    currentCommand = commandQueue[0];
-                    for(int i = 1; i < commandQueuePos; i++)
-                        commandQueue[i - 1] = commandQueue[i];
-                    commandQueuePos--;
-                    if (isCmd(currentCommand, RN52_CMD_REBOOT)) {
-                        cmdResponseTimeout = REBOOT_TIMEOUT;
-                    } else {
-                        cmdResponseTimeout = CMD_TIMEOUT;
-                    }
-                    ///toUART(currentCommand, strlen(currentCommand));
-                    toUART(currentCommand);
-                } else {
-                    //enterDataMode = true;
-                    prepareDataMode();
-                }
-            }
-        }
-        return parsed;
-    }
-    
+//    int RN52driver::parseCmdResponse(const char *data, int size)
+//    {
+//        int parsed = 0;
+//        while (parsed < size) {
+//            if (cmdRxBufferPos == CMD_RX_BUFFER_SIZE) {
+//                onError(4, OVERFLOWrn52);
+//                return -1;
+//            }
+//
+//            // If the incoming line is longer than CMD_RX_BUFFER_SIZE
+//            // try to force it to end with \r\n
+//            if (cmdRxBufferPos == CMD_RX_BUFFER_SIZE - 1) {
+//                // in the last byte accept only \n
+//                if (data[parsed] != '\n') {
+//                    // drop any other chars
+//                    parsed++;
+//                    continue;
+//                }
+//            } else if (cmdRxBufferPos == CMD_RX_BUFFER_SIZE - 2) {
+//                // in the byte before that accept \r or \n
+//                if (data[parsed] != '\r' && data[parsed] != '\n') {
+//                    // drop any other chars
+//                    parsed++;
+//                    continue;
+//                }
+//            }
+//
+//            cmdRxBuffer[cmdRxBufferPos++] = data[parsed++];
+//            //if (mode == DATA) {
+//            if (trueMode == tmCOMMAND_REQUESTED) {
+//#if (DEBUGMODE==1)
+//                Serial.print(F("Data: "));
+//                Serial.write(cmdRxBuffer, cmdRxBufferPos);
+//                Serial.println(F(""));
+//#endif
+//                // did not receive CMD\r\n yet
+//                if (cmdRxBufferPos == 5) {
+//                    if (isCmd(cmdRxBuffer, RN52_CMD_BEGIN)) {
+//                        //mode = COMMAND;
+//                        //enterCommandMode = false;
+//                    	trueMode = tmCOMMAND;
+//                        cmdRxBufferPos = 0;
+//                    } else {
+//                        //toSPP(cmdRxBuffer[0]);
+//                        for (int i = 1; i < 5; i++)
+//                            cmdRxBuffer[i - 1] = cmdRxBuffer[i];
+//                        cmdRxBufferPos--;
+//                    }
+//                }
+//            } else if (cmdRxBufferPos >= 2 &&
+//				cmdRxBuffer[cmdRxBufferPos - 1] == '\n' && cmdRxBuffer[cmdRxBufferPos - 2] == '\r') {
+//				// this is a line
+//#if (DEBUGMODE==1)
+//				Serial.print(F("CMD Response: "));
+//				Serial.write(cmdRxBuffer, cmdRxBufferPos);
+//				Serial.println(F(""));
+//#endif
+//				if (trueMode == tmDATA_REQUESTED) {
+//					if (isCmd(cmdRxBuffer, RN52_CMD_EXIT)) {
+//						//mode = DATA;
+//						//enterDataMode = false;
+//						trueMode = tmDATA;
+//
+//						cmdRxBufferPos = 0;
+//
+//						if (commandQueuePos > 0) {
+//							// there's outgoing command requests (yet or again)
+//							prepareCommandMode();
+//						}
+//						break;
+//					}
+//				} else if (trueMode == tmCOMMAND) {
+//					parseResponseLine();
+//				}
+//
+//				cmdRxBufferPos = 0;
+//            }
+//        }
+//
+//
+//        //if (mode == COMMAND && !enterDataMode) {
+//        if (trueMode == tmCOMMAND) {
+//            if (currentCommand == NULL) {
+//                if (commandQueuePos > 0) {
+//                    // send next command
+//                    currentCommand = commandQueue[0];
+//                    for(int i = 1; i < commandQueuePos; i++)
+//                        commandQueue[i - 1] = commandQueue[i];
+//                    commandQueuePos--;
+//                    if (isCmd(currentCommand, RN52_CMD_REBOOT)) {
+//                        cmdResponseTimeout = REBOOT_TIMEOUT;
+//                    } else {
+//                        cmdResponseTimeout = CMD_TIMEOUT;
+//                    }
+//                    ///toUART(currentCommand, strlen(currentCommand));
+//                    toUART(currentCommand);
+//                } else {
+//                    //enterDataMode = true;
+//                    prepareDataMode();
+//                }
+//            }
+//        }
+//        return parsed;
+//    }
+//
     int RN52driver::queueCommand(const char *cmd) {
     	getLog()->log("queue: %s\r\n", (int)cmd);
     	rtosQueue.put(cmd);
@@ -364,40 +365,40 @@ namespace RN52 {
         return true;
     }
     
-    void RN52driver::prepareCommandMode() {
-        //if (mode == COMMAND) {
-        if (trueMode == tmCOMMAND) {
-#if (DEBUGMODE==1)
-        Serial.println(F("DEBUG: prepareCommandMode(): Already in command mode."));
-#endif
-            return;
-        }
-        //enterCommandMode = true;
-        trueMode = tmCOMMAND_REQUESTED;
-        setMode(COMMAND);
-#if (DEBUGMODE==1)
-        Serial.println(F("DEBUG: RN52 'SPP -> CMD'."));
-#endif
-    }
-    
-    void RN52driver::prepareDataMode() {
-        //if (mode == DATA)
-        if (trueMode == tmDATA)
-            return;
-        
-//        if (enterCommandMode) {
+//    void RN52driver::prepareCommandMode() {
+//        //if (mode == COMMAND) {
+//        if (trueMode == tmCOMMAND) {
 //#if (DEBUGMODE==1)
-//            Serial.println(F("DEBUG: Command mode was attempted but never reached."));
+//        Serial.println(F("DEBUG: prepareCommandMode(): Already in command mode."));
 //#endif
-//            // command mode was attempted but never reached
-//            enterCommandMode = false;
+//            return;
 //        }
-        trueMode = tmDATA_REQUESTED;
-        setMode(DATA);
-#if (DEBUGMODE==1)
-        Serial.println(F("DEBUG: RN52 'CMD -> SPP'."));
-#endif
-    }
+//        //enterCommandMode = true;
+//        trueMode = tmCOMMAND_REQUESTED;
+//        setMode(COMMAND);
+//#if (DEBUGMODE==1)
+//        Serial.println(F("DEBUG: RN52 'SPP -> CMD'."));
+//#endif
+//    }
+    
+//    void RN52driver::prepareDataMode() {
+//        //if (mode == DATA)
+//        if (trueMode == tmDATA)
+//            return;
+//
+////        if (enterCommandMode) {
+////#if (DEBUGMODE==1)
+////            Serial.println(F("DEBUG: Command mode was attempted but never reached."));
+////#endif
+////            // command mode was attempted but never reached
+////            enterCommandMode = false;
+////        }
+//        trueMode = tmDATA_REQUESTED;
+//        setMode(DATA);
+//#if (DEBUGMODE==1)
+//        Serial.println(F("DEBUG: RN52 'CMD -> SPP'."));
+//#endif
+//    }
     
     int RN52driver::sendAVCRP(AVCRP cmd)
     {

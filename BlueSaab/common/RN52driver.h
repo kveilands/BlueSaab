@@ -28,7 +28,7 @@
 #include "RN52configuration.h"
 #include <rtos.h>
 
-extern unsigned long cmdResponseTimeout; // Abandon command and reset if no response/no valid response received within this period.
+//extern unsigned long cmdResponseTimeout; // Abandon command and reset if no response/no valid response received within this period.
 
 namespace RN52 {
     
@@ -43,8 +43,8 @@ namespace RN52 {
         RN52driver();
         virtual ~RN52driver(){}
         
-        int fromUART(const char c);
-        int fromUART(const char *data, int size);
+//        int fromUART(const char c);
+//        int fromUART(const char *data, int size);
 //        int toSPP(const char c);
 //        int toSPP(const char *data, int size);
         
@@ -67,23 +67,23 @@ namespace RN52 {
         void get_track_data();
         void visible(bool visible);
         int sendAVCRP(AVCRP cmd);
-        const char *currentCommand;
+//        const char *currentCommand;
         
         //Mode getMode() { return mode; }
 
     protected:
         void refreshState();
         int queueCommand(const char *cmd);
-        int getQueueSize() { 
-          return (commandQueuePos);
-        }
-        void abortCurrentCommand();
+//        int getQueueSize() {
+//          return (commandQueuePos);
+//        }
+//        void abortCurrentCommand();
         
     private:
         //Mode mode;
         //bool enterCommandMode;
         //bool enterDataMode;
-        TrueMode trueMode;
+//        TrueMode trueMode;
 
         int state;
         int profile;
@@ -91,30 +91,30 @@ namespace RN52 {
         bool sppConnected;
         bool streamingAudio;
         
-        char sppTxBuffer[SPP_TX_BUFFER_SIZE];
-        int sppTxBufferPos;
-        char cmdRxBuffer[CMD_RX_BUFFER_SIZE];
-        int cmdRxBufferPos;
+//        char sppTxBuffer[SPP_TX_BUFFER_SIZE];
+//        int sppTxBufferPos;
+//        char cmdRxBuffer[CMD_RX_BUFFER_SIZE];
+//        int cmdRxBufferPos;
         
-        const char *commandQueue[CMD_QUEUE_SIZE];
-        int commandQueuePos;
+//        const char *commandQueue[CMD_QUEUE_SIZE];
+//        int commandQueuePos;
     public:
         Queue<const char, 20> rtosQueue;
         bool parseQResponse(const char data[4]);
     private:
         
-        void prepareCommandMode();
-        void prepareDataMode();
-        void parseResponseLine();
-        int parseCmdResponse(const char *data, int size);
-        void trimRightEOL();
+//        void prepareCommandMode();
+//        void prepareDataMode();
+//        void parseResponseLine();
+//        int parseCmdResponse(const char *data, int size);
+//        void trimRightEOL();
         
         virtual void onStateChange(int state, int profile) {};
         virtual void onProfileChange(BtProfile profile, bool connected) {};
         virtual void onStreaming(bool streaming) {};
         virtual void toUART(const char* c) = 0;
-        virtual void fromSPP(const char* c, int len) = 0;
-        virtual void setMode(Mode mode) = 0;
+//        virtual void fromSPP(const char* c, int len) = 0;
+//        virtual void setMode(Mode mode) = 0;
         virtual void debug(const char *c) {};
         virtual void onError(int location, Error error) {};
     };

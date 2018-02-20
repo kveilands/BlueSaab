@@ -58,27 +58,27 @@ void RN52impl::toUART(const char* c){
 //    }
 };
 
-void RN52impl::fromSPP(const char* c, int len){
-    // bytes received from phone via SPP
-    
-    // to send bytes back to the phone call rn52.toSPP
-};
+//void RN52impl::fromSPP(const char* c, int len){
+//    // bytes received from phone via SPP
+//
+//    // to send bytes back to the phone call rn52.toSPP
+//};
 
-void RN52impl::setMode(Mode mode){
-    if (mode == COMMAND) {
-        ///digitalWrite(BT_CMD_PIN, LOW);
-    	bt_cmd_pin = 0;
-#if (DEBUGMODE==1)
-        ///Serial.println(F("RN52: Set command mode."));
-#endif
-    } else if (mode == DATA) {
-        ///digitalWrite(BT_CMD_PIN, HIGH);
-    	bt_cmd_pin = 1;
-#if (DEBUGMODE==1)
-        ///Serial.println(F("RN52: Set data mode. "));
-#endif
-    }
-};
+//void RN52impl::setMode(Mode mode){
+//    if (mode == COMMAND) {
+//        ///digitalWrite(BT_CMD_PIN, LOW);
+//    	bt_cmd_pin = 0;
+//#if (DEBUGMODE==1)
+//        ///Serial.println(F("RN52: Set command mode."));
+//#endif
+//    } else if (mode == DATA) {
+//        ///digitalWrite(BT_CMD_PIN, HIGH);
+//    	bt_cmd_pin = 1;
+//#if (DEBUGMODE==1)
+//        ///Serial.println(F("RN52: Set data mode. "));
+//#endif
+//    }
+//};
 
 void RN52impl::onError(int location, Error error){
     ///Serial.print(F("RN52 Error "));
@@ -177,14 +177,14 @@ void RN52impl::initialize() {
     bt_event_pin.fall(callback(this,&RN52impl::onGPIO2));
 }
 
-void RN52impl::processCmdQueue() {
-#if (DEBUGMODE==1)
-    ///Serial.println(F("Processing command queue."));
-#endif
-    do {
-        ///update();
-    } while (getQueueSize() || currentCommand != NULL); //FIXME: fails if only 1 cmd in the queue to start.
-}
+//void RN52impl::processCmdQueue() {
+//#if (DEBUGMODE==1)
+//    ///Serial.println(F("Processing command queue."));
+//#endif
+//    do {
+//        ///update();
+//    } while (getQueueSize() || currentCommand != NULL); //FIXME: fails if only 1 cmd in the queue to start.
+//}
 
 RXEntry*  RN52impl::waitForRXLine(uint32_t timeout) {
 //	getLog()->log("RN52impl::waitForRXLine()\r\n");
@@ -333,20 +333,4 @@ void RN52impl::run() {
 		}
 	}
 
-//	while (1) {
-//		getLog()->log("RN52impl::run() waiting for cmd...\r\n");
-//		// wait for a command from queue
-//		osEvent evt = rtosQueue.get();
-//		if (evt.status == osEventMessage) {
-//			const char *cmd = (const char*)evt.value.p;
-//			getLog()->log("RN52impl::run() from queue:");
-//			getLog()->log(cmd);
-//		}
-//		// send out the command
-//
-//		// wait for the command reply
-//
-//		// parse the reply
-//		//impl.fromUART(data, size);
-//	}
 }

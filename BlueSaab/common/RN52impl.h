@@ -43,8 +43,8 @@ class RN52impl : public RN52::RN52driver {
     
     Serial serial;
     
-    unsigned long lastEventIndicatorPinStateChange;
-    unsigned long cmdResponseDeadline;
+//    unsigned long lastEventIndicatorPinStateChange;
+//    unsigned long cmdResponseDeadline;
     
     bool playing;
     bool bt_iap;
@@ -74,8 +74,8 @@ public:
         bt_spp = false;
         bt_a2dp = false;
         bt_hfp = false;
-        lastEventIndicatorPinStateChange = 0;
-        cmdResponseDeadline = 0;
+//        lastEventIndicatorPinStateChange = 0;
+//        cmdResponseDeadline = 0;
     }
     
     ///void readFromUART();
@@ -85,10 +85,10 @@ public:
     void toUART(const char* c);
     // this method is called by RN52lib when data arrives via
     // the SPP profile
-    void fromSPP(const char* c, int len);
+//    void fromSPP(const char* c, int len);
     // this method is called by RN52lib whenever it needs to
     // switch between SPP and command mode
-    void setMode(Mode mode);
+//    void setMode(Mode mode);
     void onError(int location, Error error);
     // GPIO2 of RN52 is toggled on state change, eg. a Bluetooth
     // devices connects
@@ -99,7 +99,7 @@ public:
     void run();
 
 private:
-    void processCmdQueue();
+//    void processCmdQueue();
     RXEntry* waitForRXLine(uint32_t timeout);
     void onSerialRX(int p);
     void clearRXMail();

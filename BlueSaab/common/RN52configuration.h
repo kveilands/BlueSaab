@@ -26,10 +26,10 @@
 #define RN52CONFIGURATION_H
 
 
-#define SPP_TX_BUFFER_SIZE		128
-#define CMD_RX_BUFFER_SIZE		68
-#define CMD_QUEUE_SIZE			12 // Leave enough room to queue the configuration commands in initialize()
-#define CMD_TIMEOUT				1000
-#define REBOOT_TIMEOUT			3000
+//#define SPP_TX_BUFFER_SIZE		128
+//#define CMD_RX_BUFFER_SIZE		68
+//#define CMD_QUEUE_SIZE			12 // Leave enough room to queue the configuration commands in initialize()
+//#define CMD_TIMEOUT				1000
+//#define REBOOT_TIMEOUT			3000
 
 #endif /* RN52CONFIGURATION_H */
