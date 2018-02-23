@@ -1,5 +1,6 @@
 #include "Buttons.h"
 #include "Bluetooth.h"
+#include "SidResource.h"
 
 Buttons buttons;
 
@@ -54,6 +55,8 @@ Buttons::Button decode(unsigned char data1, unsigned char data2) {
 void Buttons::onFrame(CANMessage& frame) {
 	if (frame.data[0] != 0x80)
 		return;
+
+	sidResource.requestDriverBreakthrough();
 
 	Buttons::Button button = decode(frame.data[1], frame.data[2]);
 	if (button != Buttons::NONE) {

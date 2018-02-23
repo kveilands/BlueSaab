@@ -5,6 +5,7 @@
 #include "CDCStatus.h"
 #include "MessageSender.h"
 #include "Bluetooth.h"
+#include "SidResource.h"
 
 //DigitalOut aliveLed (LED1);
 DigitalOut aliveLed (PA_1);
@@ -23,6 +24,7 @@ int main() {
 	bluetooth.initialize();
 	buttons.initialize();
 	cdcStatus.initialize();
+	sidResource.initialize();
 
 	while (1) {
 		Thread::wait(1000);

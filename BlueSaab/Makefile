@@ -57,6 +57,7 @@ OBJECTS += Scroller.o
 OBJECTS += Buttons.o
 OBJECTS += CDCStatus.o
 OBJECTS += MessageSender.o
+OBJECTS += SidResource.o
 
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o
