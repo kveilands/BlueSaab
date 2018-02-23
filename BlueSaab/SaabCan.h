@@ -70,7 +70,7 @@ class SaabCan {
 
 	void sendFunc();
 public:
-	SaabCan(): send_thread(osPriorityNormal, 512) {}
+	SaabCan(): send_thread(osPriorityNormal, 256) {}
 	void initialize(int hz);
 	void sendCanFrame(int canId, const unsigned char *data);
 	void sendCanMessage(CANMessage &msg);

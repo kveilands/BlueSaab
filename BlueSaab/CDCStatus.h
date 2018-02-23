@@ -11,7 +11,7 @@ class CDCStatus {
 	void sendCdcStatus(bool event, bool remote, bool cdcActive);
 
 public:
-	CDCStatus():cdcActive(false), thread(osPriorityNormal, 768) {}
+	CDCStatus():cdcActive(false), thread(osPriorityNormal, 256) {}
 	void initialize();
 	void onIhuStatusFrame(CANMessage& frame);
 	void onCDCControlFrame(CANMessage& frame);

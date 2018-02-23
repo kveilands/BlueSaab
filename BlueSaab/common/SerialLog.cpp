@@ -73,7 +73,7 @@ void SerialLog::run() {
 		int time_since_print = time_now - last_threads_printed;
 		if (time_since_print > 1000000) {
 			last_threads_printed = time_now;
-			//printThreads();
+			printThreads();
 		}
 	}
 }

@@ -7,7 +7,7 @@ void MessageSender::send() {
 
 void MessageSender::run() {
 	while(1) {
-		Thread::signal_wait(0x1);
+		Thread::signal_wait(signal);
 		uint32_t t0 = us_ticker_read();
 		for(int i=0; i<frameCount; i++) {
 			if (i > 0)

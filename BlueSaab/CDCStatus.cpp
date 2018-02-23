@@ -26,9 +26,9 @@ unsigned char cdcPowerdownCmd[NODE_STATUS_TX_MSG_SIZE][8] = {
 
 unsigned char soundCmd[] = {0x80,0x04,0x00,0x00,0x00,0x00,0x00,0x00};
 
-//MessageSender cdcPoweronCmdSender(NODE_STATUS_TX_CDC,cdcPoweronCmd, 4, NODE_STATUS_TX_INTERVAL);
-MessageSender cdcActiveCmdSender(NODE_STATUS_TX_CDC, cdcActiveCmd, 4, NODE_STATUS_TX_INTERVAL);
-//MessageSender cdcPowerdownCmdSender(NODE_STATUS_TX_CDC, cdcPowerdownCmd, 4, NODE_STATUS_TX_INTERVAL);
+MessageSender cdcPoweronCmdSender(0x4, NODE_STATUS_TX_CDC,cdcPoweronCmd, 4, NODE_STATUS_TX_INTERVAL);
+MessageSender cdcActiveCmdSender(0x1, NODE_STATUS_TX_CDC, cdcActiveCmd, 4, NODE_STATUS_TX_INTERVAL);
+MessageSender cdcPowerdownCmdSender(0x8, NODE_STATUS_TX_CDC, cdcPowerdownCmd, 4, NODE_STATUS_TX_INTERVAL);
 
 void CDCStatus::initialize() {
 	saabCan.attach(NODE_STATUS_RX_IHU, callback(this, &CDCStatus::onIhuStatusFrame));
@@ -64,13 +64,13 @@ void CDCStatus::onIhuStatusFrame(CANMessage& frame) {
 //	pcSerial.printf("CDCStatus::onIhuStatusFrame frame.data[3] & 0x0F = %x\r\n", frame.data[3] & 0x0F);
     switch (frame.data[3] & 0x0F){
         case (0x3):
-//			cdcPoweronCmdSender.send();
+			cdcPoweronCmdSender.send();
             break;
         case (0x2):
 			cdcActiveCmdSender.send();
             break;
         case (0x8):
-//			cdcPowerdownCmdSender.send();
+			cdcPowerdownCmdSender.send();
             break;
     }
 }

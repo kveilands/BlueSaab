@@ -134,7 +134,7 @@
 // RTX 4 only config below, for backward-compability
 
 #ifndef OS_TASKCNT
-#define OS_TASKCNT              6
+#define OS_TASKCNT              8
 #endif
 #ifndef OS_MAINSTKSIZE
 #define OS_MAINSTKSIZE          128

@@ -11,7 +11,7 @@ DigitalOut aliveLed (PA_1);
 
 //extern MessageSender cdcActiveCmdSender;
 
-Thread logThread(osPriorityLow, 2048);
+Thread logThread(osPriorityLow, 1024);
 
 int main() {
 	logThread.start(callback(getLog(),&SerialLog::run));

@@ -5,6 +5,7 @@
 #include "SerialLog.h"
 
 class MessageSender {
+	const int32_t signal;
 	const int frameId;
 	const unsigned char (*frames)[8];
 	int frameCount;
@@ -13,9 +14,9 @@ class MessageSender {
 
 	void run();
 public:
-	MessageSender(int frameId, unsigned char frames[][8], int frameCount, uint32_t interval)
-		:frameId(frameId), frames(frames), frameCount(frameCount), interval(interval),
-		 thread(osPriorityNormal, 768)
+	MessageSender(int32_t signal, int frameId, unsigned char frames[][8], int frameCount, uint32_t interval)
+		:signal(signal), frameId(frameId), frames(frames), frameCount(frameCount), interval(interval),
+		 thread(osPriorityNormal, 256)
 	{
 		thread.start(callback(this, &MessageSender::run));
 		getLog()->registerThread("MessageSender::run", &thread);
