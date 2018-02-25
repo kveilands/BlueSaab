@@ -2,6 +2,7 @@
 #include "SaabCan.h"
 #include "MessageSender.h"
 #include "Bluetooth.h"
+#include "SidResource.h"
 
 CDCStatus cdcStatus;
 
@@ -43,11 +44,13 @@ void CDCStatus::onCDCControlFrame(CANMessage& frame) {
 		switch (frame.data[1]) {
 		case 0x24:
 			cdcActive = true;
+			sidResource.activate();
 			saabCan.sendCanFrame(SOUND_REQUEST, soundCmd);
 			thread.signal_set(0x2);
 			bluetooth.reconnect();
 			break;
 		case 0x14:
+			sidResource.deactivate();
 			cdcActive = false;
 			thread.signal_set(0x2);
 			bluetooth.disconnect();
