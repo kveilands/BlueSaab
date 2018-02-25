@@ -2,7 +2,7 @@
 #include "SaabCan.h"
 
 void MessageSender::send() {
-	thread.signal_set(0x1);
+	thread.signal_set(signal);
 }
 
 void MessageSender::run() {
