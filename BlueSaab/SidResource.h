@@ -46,7 +46,7 @@ public:
 //	void update();
 	void requestDriverBreakthrough() {
 		sidDriverBreakthroughNeeded = true;
-		thread.signal_set(0x16);
+		thread.signal_set(0x10);
 	}
 	void activate() {
 		sidWriteAccessWanted = true;

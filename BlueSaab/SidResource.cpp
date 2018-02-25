@@ -72,7 +72,7 @@ void SidResource::run() {
 		Thread::wait(100);
 //		cdcStatusResendNeeded = false;
 //		cdcStatusResendDueToCdcCommand = false;
-		osEvent result = Thread::signal_wait(0x16, NODE_UPDATE_BASETIME-100);
+		osEvent result = Thread::signal_wait(0x10, NODE_UPDATE_BASETIME-100);
 		if (result.status == osEventSignal) {
 //			cdcStatusResendNeeded = true;
 //			cdcStatusResendDueToCdcCommand = true;
@@ -128,7 +128,7 @@ unsigned char sidMessageGroup[3][8] = {
     {0x00,0x96,0x02,'6',0,0,0,0}
 };
 
-MessageSender textSender(0x32, NODE_WRITE_TEXT_ON_DISPLAY, sidMessageGroup, 3, 10);
+MessageSender textSender(0x20, NODE_WRITE_TEXT_ON_DISPLAY, sidMessageGroup, 3, 10);
 
 void SidResource::grantReceived(CANMessage& frame) {
     if (sidWriteAccessWanted) {
