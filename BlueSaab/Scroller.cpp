@@ -28,13 +28,20 @@ Scroller::Scroller(): info_lock(1) {
 	title[TITLE_BUF_SIZE - 1] = 0;
 }
 
+void Scroller::clear() {
+	info_lock.wait();
+	artist[0] = 0;
+	title[0] = 0;
+	position = 0;
+	info_lock.release();
+}
+
 void Scroller::set_info(const char *artist_,const char *title_) {
 	info_lock.wait();
 	strncpy(artist, artist_, ARTIST_BUF_SIZE - 1);
 	strncpy(title, title_, TITLE_BUF_SIZE - 1);
 	position = 0;
 	info_lock.release();
-
 }
 
 const char* Scroller::get() {

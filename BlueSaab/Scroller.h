@@ -75,6 +75,7 @@ class Scroller {
 
 public:
 	Scroller();
+	void clear();
 	void set_info(const char *artist,const char *title);
 	const char* get();
 };

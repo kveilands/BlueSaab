@@ -25,6 +25,7 @@
 
 #include <rtos.h>
 #include "MessageSender.h"
+#include "Scroller.h"
 
 class SidResource {
 	unsigned char sidMessageGroup[3][8];
@@ -53,10 +54,12 @@ public:
 		thread.signal_set(0x10);
 	}
 	void activate() {
+		scroller.clear();
 		sidWriteAccessWanted = true;
 		writeTextOnDisplayUpdateNeeded = true;
 	}
 	void deactivate() {
+		scroller.clear();
 		sidWriteAccessWanted = false;
 	}
 
