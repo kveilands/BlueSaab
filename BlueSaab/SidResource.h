@@ -24,8 +24,12 @@
 #define SAAB_CDC_SIDRESOURCE_H_
 
 #include <rtos.h>
+#include "MessageSender.h"
 
 class SidResource {
+	unsigned char sidMessageGroup[3][8];
+	MessageSender textSender;
+
 	bool sidDriverBreakthroughNeeded;
 //	unsigned long sidRequestLastSendTime;
 	bool sidWriteAccessWanted;                        // True while we want to write on SID
@@ -37,7 +41,7 @@ class SidResource {
 	void run();
 
 	void sendDisplayRequest();
-	void writeTextOnDisplay(const char textIn[], bool event);
+	void formatTextMessage(const char textIn[], bool event);
 public:
 	SidResource();
 	~SidResource();

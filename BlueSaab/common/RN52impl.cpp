@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "SerialLog.h"
+#include "Scroller.h"
 
 #define DEBUGMODE 0
 
@@ -246,6 +247,19 @@ static bool isCmd(const char *buffer, const char *cmd) {
 char title[72];
 char artist[72];
 
+void copy_text(char *to, const char *from, int max_len) {
+	to[max_len-1] = 0;
+	for(int i=0; i<max_len-1; ++i) {
+		if (*from == 0 || *from == '\r' || *from == '\n') {
+			*to = 0;
+			return;
+		}
+		*to = *from;
+		++from;
+		++to;
+	}
+}
+
 void RN52impl::run() {
 	getLog()->log("RN52impl::run() started\r\n");
 
@@ -275,6 +289,8 @@ void RN52impl::run() {
 
 						if (isCmd(cmd, RN52_CMD_GET_TRACK_DATA)) { // gather track info until timeout
 							int lines = 0;
+							title[0] = 0;
+							artist[0] = 0;
 							while ( true ) {
 								gotBuf = waitForRXLine(100);
 								if (gotBuf) {
@@ -282,13 +298,15 @@ void RN52impl::run() {
 									// The strings after Title= and Artist= seem to be limited to 60 chars,
 									// plus \r\r\n. Which makes it max 70 chars total.
 									if (isCmd(gotBuf->buf, "Title=")) {
-										strncpy(title,gotBuf->buf,sizeof(title)); // may not 0 terminate
-										title[sizeof(title)-1] = 0;
-										getLog()->log(title);
+//										strncpy(title,gotBuf->buf,sizeof(title)); // may not 0 terminate
+//										title[sizeof(title)-1] = 0;
+										copy_text(title, (gotBuf->buf)+6, sizeof(title));
+										getLog()->log("t=%s\r\n", (int)title);
 									} else if (isCmd(gotBuf->buf, "Artist=")) {
-										strncpy(artist,gotBuf->buf,sizeof(artist)); // may not 0 terminate
-										artist[sizeof(artist)-1] = 0;
-										getLog()->log(artist);
+//										strncpy(artist,gotBuf->buf,sizeof(artist)); // may not 0 terminate
+//										artist[sizeof(artist)-1] = 0;
+										copy_text(artist, (gotBuf->buf)+7, sizeof(artist));
+										getLog()->log("a=%s\r\n", (int)artist);
 									} else {
 										getLog()->logShortString(gotBuf->buf);
 									}
@@ -298,6 +316,7 @@ void RN52impl::run() {
 									break;
 								}
 							}
+							scroller.set_info(artist, title);
 						} else
 						if (isCmd(cmd, RN52_CMD_QUERY)) {
 							gotBuf = waitForRXLine(500);

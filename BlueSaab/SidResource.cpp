@@ -37,11 +37,19 @@
 
 SidResource sidResource;
 
-SidResource::SidResource(): thread(osPriorityNormal, 256) {
+SidResource::SidResource():
+		textSender(0x20, NODE_WRITE_TEXT_ON_DISPLAY, sidMessageGroup, 3, 10),
+		thread(osPriorityNormal, 256)
+{
 	sidDriverBreakthroughNeeded = false;
 //	sidRequestLastSendTime = 0;
 	sidWriteAccessWanted = false;
 	writeTextOnDisplayUpdateNeeded = false;
+
+	// fill in some default values
+	memcpy(sidMessageGroup[0],"\x42\x96\x02" "BlueS",sizeof(sidMessageGroup[0]));
+	memcpy(sidMessageGroup[1],"\x01\x96\x02" "aab v",sizeof(sidMessageGroup[1]));
+	memcpy(sidMessageGroup[2],"\x00\x96\x02" "6\0\0\0\0",sizeof(sidMessageGroup[2]));
 }
 
 SidResource::~SidResource() {
@@ -122,20 +130,12 @@ void SidResource::sendDisplayRequest() {
 //    sidRequestLastSendTime = millis();
 }
 
-unsigned char sidMessageGroup[3][8] = {
-    {0x42,0x96,0x02,'B','l','u','e','S'},
-    {0x01,0x96,0x02,'a','a','b',' ','v'},
-    {0x00,0x96,0x02,'6',0,0,0,0}
-};
-
-MessageSender textSender(0x20, NODE_WRITE_TEXT_ON_DISPLAY, sidMessageGroup, 3, 10);
-
 void SidResource::grantReceived(CANMessage& frame) {
     if (sidWriteAccessWanted) {
         if ((frame.data[0] == 0x02) && (frame.data[1] == NODE_SID_FUNCTION_ID)) {
             // We have been granted write access on 2nd row of SID
-        //    const char *buffer = scroller.get();
-        //    writeTextOnDisplay(buffer[0] ? buffer : MODULE_NAME, writeTextOnDisplayUpdateNeeded);
+            const char *buffer = scroller.get();
+            formatTextMessage(buffer[0] ? buffer : MODULE_NAME, writeTextOnDisplayUpdateNeeded);
         	textSender.send();
         }
 //        else if ((data[0] == 0x02) && (data[1] == 0x19)) {
@@ -157,28 +157,30 @@ void SidResource::ihuRequestReceived(CANMessage& frame) {
  * Note: the character set used by the SID is slightly nonstandard. "Normal" characters should work fine.
  */
 
-//void SidResource::writeTextOnDisplay(const char textIn[], bool event) {
-//
-//    if (!textIn) {
-//        return;
-//    }
-//    // Copy the provided string and make sure we have a new array of the correct length
-//    unsigned char textToSid[15];
-//    int n = strnlen(textIn, 12); // 12 is the number of characters SID can display on each row; anything beyond 12 is going to be zeroed out
-//    for (int i = 0; i < n; i++) {
-//        textToSid[i] = textIn[i];
-//    }
-//    for (int i = n; i < 15; i++) {
-//        textToSid[i] = 0;
-//    }
-//
-//    unsigned char eventByte = event ? 0x82 : 0x02;
+void SidResource::formatTextMessage(const char textIn[], bool event) {
+    // Copy the provided string and make sure we have a new array of the correct length
+    unsigned char textToSid[15];
+    int n = strnlen(textIn, 12); // 12 is the number of characters SID can display on each row; anything beyond 12 is going to be zeroed out
+    for (int i = 0; i < n; i++) {
+        textToSid[i] = textIn[i];
+    }
+    for (int i = n; i < 15; i++) {
+        textToSid[i] = 0;
+    }
+
+    unsigned char eventByte = event ? 0x82 : 0x02;
+    sidMessageGroup[0][2] = eventByte;
+    sidMessageGroup[1][2] = eventByte;
+    sidMessageGroup[2][2] = eventByte;
+    memcpy(&sidMessageGroup[0][3], textToSid, 5);
+    memcpy(&sidMessageGroup[1][3], textToSid+5, 5);
+    memcpy(&sidMessageGroup[2][3], textToSid+10, 5);
 //    unsigned char sidMessageGroup[3][8] = {
 //        {0x42,0x96,eventByte,textToSid[0],textToSid[1],textToSid[2],textToSid[3],textToSid[4]},
 //        {0x01,0x96,eventByte,textToSid[5],textToSid[6],textToSid[7],textToSid[8],textToSid[9]},
 //        {0x00,0x96,eventByte,textToSid[10],textToSid[11],textToSid[12],textToSid[13],textToSid[14]}
 //    };
-//
+
 //    messageSender.sendCanMessage(NODE_WRITE_TEXT_ON_DISPLAY,sidMessageGroup,3,10);
 //    writeTextOnDisplayUpdateNeeded = false;
-//}
+}

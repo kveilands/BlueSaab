@@ -20,38 +20,28 @@
 
 Scroller scroller;
 
-Scroller::Scroller() {
+Scroller::Scroller(): info_lock(1) {
 	position = 0;
-	update_completed = false;
 	artist[0] = 0;
 	artist[ARTIST_BUF_SIZE - 1] = 0;
 	title[0] = 0;
 	title[TITLE_BUF_SIZE - 1] = 0;
 }
 
-void Scroller::start_update() {
-	update_completed = false;
-	artist[0] = 0;
-	title[0] = 0;
-}
-void Scroller::complete_update() {
-	update_completed = true;
+void Scroller::set_info(const char *artist_,const char *title_) {
+	info_lock.wait();
+	strncpy(artist, artist_, ARTIST_BUF_SIZE - 1);
+	strncpy(title, title_, TITLE_BUF_SIZE - 1);
 	position = 0;
-}
-void Scroller::set_artist(const char *s) {
-	strncpy(artist, s, ARTIST_BUF_SIZE - 1);
-}
-void Scroller::set_title(const char *s) {
-	strncpy(title, s, TITLE_BUF_SIZE - 1);
+	info_lock.release();
+
 }
 
 const char* Scroller::get() {
-	if (!update_completed) {
-		buffer.clear();
-		return buffer.buffer;
-	}
-
 	buffer.clear();
+
+	info_lock.wait();
+
 	buffer.cut(position);
 	bool got_all_artist = buffer.add(artist);
 	if (artist[0] != 0 && title[0] != 0) {
@@ -60,12 +50,13 @@ const char* Scroller::get() {
 	bool got_all_title = buffer.add(title);
 	bool got_all = ((title[0] != 0 && got_all_title)
 			|| (title[0] == 0 && got_all_artist));
-
 	if (got_all) {
 		position = 0;
 	} else {
 		position++;
 	}
+
+	info_lock.release();
 
 	return buffer.buffer;
 }

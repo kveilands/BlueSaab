@@ -20,6 +20,7 @@
 #define SAAB_CDC_SCROLLER_H_
 
 #include <string.h>
+#include <rtos.h>
 
 #define WRITE_BUF_SIZE  12
 #define TITLE_BUF_SIZE  64
@@ -65,21 +66,17 @@ public:
 
 class Scroller {
 	StringBuffer buffer;
-	bool update_completed;
+
+	// These are set from the bluetooth thread, and used from CAN ISR. So they need protection.
 	char title[TITLE_BUF_SIZE];
 	char artist[ARTIST_BUF_SIZE];
 	int position;
+	Semaphore info_lock; // mbed docs say a mutex cannot be used in ISRs, so we'll use a semaphore
 
 public:
 	Scroller();
-
-	void set_artist(const char *s);
-	void set_title(const char *s);
-
+	void set_info(const char *artist,const char *title);
 	const char* get();
-
-	void start_update();
-	void complete_update();
 };
 
 extern Scroller scroller;
