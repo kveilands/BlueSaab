@@ -59,6 +59,10 @@ void Bluetooth::reboot() {
     impl.reboot();
 }
 
+void Bluetooth::get_details() {
+	impl.get_details();
+}
+
 void Bluetooth::handleDebugChar(char c) {
 	switch (c) {
 		case 'V':
@@ -98,7 +102,8 @@ void Bluetooth::handleDebugChar(char c) {
 			getLog()->log("Rebooting the RN52\r\n");
 			break;
 		case 'd':
-			//driver.print_mac();
+			get_details();
+			getLog()->log("Getting details\r\n");
 			break;
 		case 'H':
 		case 'h':
@@ -113,7 +118,8 @@ void Bluetooth::handleDebugChar(char c) {
 				"R - Previous Track/Beginning of Track\r\n"
 				"A - Invoke Voice Assistant\r\n"
 				"B - Reboot the RN52 module\r\n"
-				"H - Show this list of commands\r\n");
+				"H - Show this list of commands\r\n"
+				"d - get RN52 details\r\n");
 			break;
 //		case ' ':
 //		case '\t':

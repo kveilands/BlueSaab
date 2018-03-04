@@ -23,6 +23,7 @@ public:
 	void disconnect();
 	void set_maxvol();
 	void reboot();
+	void get_details();
 
 	void handleDebugChar(char c);
 };

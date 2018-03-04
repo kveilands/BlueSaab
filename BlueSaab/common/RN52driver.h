@@ -63,7 +63,7 @@ namespace RN52 {
         void set_extended_features();
         void set_pair_timeout();
         void reboot();
-        void print_mac();
+        void get_details();
         void get_track_data();
         void visible(bool visible);
         int sendAVCRP(AVCRP cmd);

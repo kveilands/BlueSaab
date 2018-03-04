@@ -547,7 +547,7 @@ namespace RN52 {
         queueCommand(RN52_CMD_REBOOT);
     }
     
-    void RN52driver::print_mac() {
+    void RN52driver::get_details() {
         queueCommand(RN52_CMD_DETAILS);
     }
 

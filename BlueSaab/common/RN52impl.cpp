@@ -318,6 +318,24 @@ void RN52impl::run() {
 							}
 							scroller.set_info(artist, title);
 						} else
+						if (isCmd(cmd, RN52_CMD_DETAILS)) { // gather details until timeout
+							int lines = 0;
+							while ( true ) {
+								gotBuf = waitForRXLine(100);
+								if (gotBuf) {
+									lines++;
+									if (isCmd(gotBuf->buf, "BTA=")) {
+										strncpy(title,gotBuf->buf,sizeof(title)); // may not 0 terminate
+										title[sizeof(title)-1] = 0;
+										getLog()->log(title);
+									}
+									rx_mail_box.free(gotBuf);
+								} else {
+									getLog()->log("details response %d lines\r\n", lines);
+									break;
+								}
+							}
+						} else
 						if (isCmd(cmd, RN52_CMD_QUERY)) {
 							gotBuf = waitForRXLine(500);
 							if (gotBuf) {
