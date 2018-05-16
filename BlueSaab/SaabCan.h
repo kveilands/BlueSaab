@@ -38,7 +38,7 @@
 #define DISPLAY_RESOURCE_GRANT		0x368
 #define NODE_STATUS_RX_IHU			0x6A1
 #define STEERING_WHEEL_BUTTONS		0x290
-#define IHU_DISPLAY_RESOURCE_REQ		0x348
+#define IHU_DISPLAY_RESOURCE_REQ	0x348
 
 /**
  * Time interval definitions:
@@ -46,15 +46,15 @@
 
 #define NODE_STATUS_TX_INTERVAL		140 			// Replies to '6A1' request need to be sent with no more than 140ms interval; tolerances +/- 10%
 #define CDC_STATUS_TX_BASETIME		950 			// The CDC status frame must be sent periodically within this time-frame; tolerances +/- 10%
-#define NODE_UPDATE_BASETIME			1000
+#define NODE_UPDATE_BASETIME		1000
 
 /**
  * Other useful stuff
  */
 
 #define MODULE_NAME					"BlueSaab v6"
-#define LAST_EVENT_IN_TIMEOUT		3000 		// Milliseconds
-#define NODE_STATUS_TX_MSG_SIZE		4 			// Decimal; defines how many frames do we need to reply with to '6A1'
+#define LAST_EVENT_IN_TIMEOUT		3000 		    // Milliseconds
+#define NODE_STATUS_TX_MSG_SIZE		4 			    // Decimal; defines how many frames do we need to reply with to '6A1'
 
 struct FrameCallback {
 	unsigned int id;
@@ -75,10 +75,6 @@ public:
 	void sendCanFrame(int canId, const unsigned char *data);
 	void sendCanMessage(CANMessage &msg);
 	void sendCanMessage(CANFormat format, unsigned int id, unsigned char len, const char *data);
-	void handleRxFrame();
-	void handleIhuButtons();
-	void handleSteeringWheelButtons();
-
 	void onRx();
 	void attach(unsigned int canId, Callback<void(CANMessage&)>);
 };

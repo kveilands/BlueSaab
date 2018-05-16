@@ -60,11 +60,12 @@ void CDCStatus::onCDCControlFrame(CANMessage& frame) {
 }
 
 void CDCStatus::onIhuStatusFrame(CANMessage& frame) {
+
     /*
      Here be dragons... This part of the code is responsible for causing lots of headache
      We look at the bottom half of 3rd byte of '6A1' frame to determine what the "reply" should be
      */
-//	pcSerial.printf("CDCStatus::onIhuStatusFrame frame.data[3] & 0x0F = %x\r\n", frame.data[3] & 0x0F);
+
     switch (frame.data[3] & 0x0F){
         case (0x3):
 			cdcPoweronCmdSender.send();
@@ -84,7 +85,6 @@ void CDCStatus::run() {
 	bool cdcStatusResendDueToCdcCommand = false;
 
 	while(1) {
-//		getLog()->log2("CDCStatus::run() loop\r\n");
 		getLog()->log("cdcActive %d\r\n", cdcActive);
 		sendCdcStatus(cdcStatusResendNeeded, cdcStatusResendDueToCdcCommand, cdcActive);
 		Thread::wait(50);
@@ -103,7 +103,7 @@ void CDCStatus::sendCdcStatus(bool event, bool remote, bool cdcActive) {
     /* Format of GENERAL_STATUS_CDC frame:
      ID: CDC node ID
      [0]:
-     byte 0, bit 7: FCI NEW DATA: 0 - sent on basetime, 1 - sent on event
+     byte 0, bit 7: FCI NEW DATA: 0 - sent on base time, 1 - sent on event
      byte 0, bit 6: FCI REMOTE CMD: 0 - status change due to internal operation, 1 - status change due to CDC_COMMAND frame
      byte 0, bit 5: FCI DISC PRESENCE VALID: 0 - disc presence signal is not valid, 1 - disc presence signal is valid
      [1]: Disc presence validation (boolean)
@@ -124,11 +124,6 @@ void CDCStatus::sendCdcStatus(bool event, bool remote, bool cdcActive) {
     cdcGeneralStatusCmd[1] = (cdcActive ? 0xFF : 0x00);                             // Validation for presence of six discs in the magazine
     cdcGeneralStatusCmd[2] = (cdcActive ? 0x3F : 0x01);                             // There are six discs in the magazine
     cdcGeneralStatusCmd[3] = (cdcActive ? 0x41 : 0x01);                             // ToDo: check 0x01 | (discMode << 4) | 0x01
-//    cdcGeneralStatusCmd[4] = 0xFF;
-//    cdcGeneralStatusCmd[5] = 0xFF;
-//    cdcGeneralStatusCmd[6] = 0xFF;
-//    cdcGeneralStatusCmd[7] = 0xD0;
 
     saabCan.sendCanFrame(GENERAL_STATUS_CDC, cdcGeneralStatusCmd);
 }
-

@@ -67,7 +67,7 @@ public:
 class Scroller {
 	StringBuffer buffer;
 
-	// These are set from the bluetooth thread, and used from CAN ISR. So they need protection.
+	// These are set from the Bluetooth thread, and used from CAN ISR. So they need protection.
 	char title[TITLE_BUF_SIZE];
 	char artist[ARTIST_BUF_SIZE];
 	int position;
