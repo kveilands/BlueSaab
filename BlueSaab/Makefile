@@ -58,6 +58,7 @@ OBJECTS += Buttons.o
 OBJECTS += CDCStatus.o
 OBJECTS += MessageSender.o
 OBJECTS += SidResource.o
+OBJECTS += can_api.o
 
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o
@@ -87,7 +88,7 @@ OBJECTS += mbed-rtos/rtx/TARGET_CORTEX_M/rt_Timer.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/PeripheralPins.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/analogin_api.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/analogout_api.o
- SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/can_api.o
+# SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/can_api.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/gpio_api.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/gpio_irq_api.o
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F103RB/TOOLCHAIN_GCC_ARM/gpio_irq_device.o

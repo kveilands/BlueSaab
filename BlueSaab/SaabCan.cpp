@@ -80,7 +80,17 @@ void SaabCan::sendFunc() {
         if (evt.status == osEventMail) {
         	CANMessage *message = (CANMessage*)evt.value.p;
         	getLog()->logFrame(message);
-            iBus.write(*message);
+            unsigned tde = iBus.tderror();
+            if (tde) {
+            	getLog()->log("send tde=%d --> RESET\r\n", tde);
+            	iBus.reset();
+            }
+        	int rc = iBus.write(*message);
+            unsigned rde = iBus.rderror();
+            tde = iBus.tderror();
+            getLog()->log("send rc=%d\r\n", rc);
+            getLog()->log("    rde=%d\r\n", rde);
+            getLog()->log("    tde=%d\r\n", tde);
             canFrameQueue.free(message);
             aliveLed = !aliveLed;
         }
