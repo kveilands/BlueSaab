@@ -81,16 +81,22 @@ void SaabCan::sendFunc() {
         	CANMessage *message = (CANMessage*)evt.value.p;
         	getLog()->logFrame(message);
             unsigned tde = iBus.tderror();
-            if (tde) {
-            	getLog()->log("send tde=%d --> RESET\r\n", tde);
-            	iBus.reset();
-            }
-        	int rc = iBus.write(*message);
+//            if (tde) {
+//            	getLog()->log("send tde=%d --> RESET\r\n", tde);
+//            	iBus.reset();
+//            }
+            int rc = iBus.write(*message);
+            getLog()->log("send rc=%d\r\n", rc);
             unsigned rde = iBus.rderror();
             tde = iBus.tderror();
-            getLog()->log("send rc=%d\r\n", rc);
             getLog()->log("    rde=%d\r\n", rde);
             getLog()->log("    tde=%d\r\n", tde);
+
+            uint32_t esr = iBus.read_ESR();
+            getLog()->log("    ESR=%08x\r\n", esr);
+            getLog()->log("    BOFF=%x\r\n", esr&4);
+            getLog()->log("    MCR=%08x\r\n", iBus.read_MCR());
+
             canFrameQueue.free(message);
             aliveLed = !aliveLed;
         }

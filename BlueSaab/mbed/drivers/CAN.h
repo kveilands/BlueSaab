@@ -25,6 +25,11 @@
 #include "platform/PlatformMutex.h"
 #include "platform/NonCopyable.h"
 
+extern "C" {
+uint32_t can_read_ESR(can_t *obj);
+uint32_t can_read_MCR(can_t *obj);
+}
+
 namespace mbed {
 /** \addtogroup drivers */
 
@@ -212,6 +217,19 @@ public:
      *  @returns number of read errors
      */
     unsigned char rderror();
+
+    uint32_t read_ESR() {
+        lock();
+        uint32_t ret = can_read_ESR(&_can);
+        unlock();
+        return ret;
+    }
+    uint32_t read_MCR() {
+        lock();
+        uint32_t ret = can_read_MCR(&_can);
+        unlock();
+        return ret;
+    }
 
     /** Detects write errors - Used to detect write overflow errors.
      *

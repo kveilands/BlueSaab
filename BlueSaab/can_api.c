@@ -71,7 +71,7 @@ void can_init_freq (can_t *obj, PinName rd, PinName td, int hz)
 
     CanHandle.Init.TTCM = DISABLE;
     CanHandle.Init.ABOM = ENABLE;
-    CanHandle.Init.AWUM = DISABLE;
+    CanHandle.Init.AWUM = ENABLE;
     CanHandle.Init.NART = DISABLE;
     CanHandle.Init.RFLM = DISABLE;
     CanHandle.Init.TXFP = DISABLE;
@@ -327,6 +327,18 @@ void can_reset(can_t *obj)
     CAN_TypeDef *can = (CAN_TypeDef *)(obj->can);
     can->MCR |= CAN_MCR_RESET;
     can->ESR = 0x0;
+}
+
+uint32_t can_read_ESR(can_t *obj)
+{
+    CAN_TypeDef *can = (CAN_TypeDef *)(obj->can);
+	return can->ESR;
+}
+
+uint32_t can_read_MCR(can_t *obj)
+{
+    CAN_TypeDef *can = (CAN_TypeDef *)(obj->can);
+	return can->MCR;
 }
 
 unsigned char can_rderror(can_t *obj)
