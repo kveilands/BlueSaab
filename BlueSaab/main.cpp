@@ -7,7 +7,6 @@
 #include "Bluetooth.h"
 #include "SidResource.h"
 
-//DigitalOut aliveLed (LED1);
 DigitalOut aliveLed(PA_1);
 
 Thread logThread(osPriorityLow, 1024);

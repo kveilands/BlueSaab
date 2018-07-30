@@ -33,7 +33,7 @@ class SidResource {
 
 	bool sidDriverBreakthroughNeeded;
 //	unsigned long sidRequestLastSendTime;
-	bool sidWriteAccessWanted;                        // True while we want to write on SID
+	bool sidWriteAccessWanted;
 
 	bool writeTextOnDisplayUpdateNeeded;
 
