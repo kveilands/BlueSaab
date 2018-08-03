@@ -1,19 +1,18 @@
-/*
- * C++ Class for handling CD changer emulator communications on SAAB I-Bus
- * Copyright (C) 2017 Karlis Veilands
+/* C++ class for handling/emulating node communications on SAAB I-bus
+ * Copyright (C) 2018 Girts Linde
  *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "mbed.h"
@@ -30,14 +29,14 @@ int incomingEventCounter = 0; 								    // Counter for incoming events to dete
 
 void SaabCan::initialize(int hz) {
 	if (iBus.frequency(hz) && iBus.mode(CAN::Normal)) {
-		getLog()->log("CAN OK\r\n");
+//		getLog()->log("CAN OK\r\n");
 	} else {
-		getLog()->log("CAN NOT OK\r\n");
+//		getLog()->log("CAN NOT OK\r\n");
 	}
 
 	iBus.attach(callback(this,&SaabCan::onRx), mbed::CAN::RxIrq);
 	send_thread.start(callback(this, &SaabCan::sendFunc));
-	getLog()->registerThread("SaabCan::sendFunc", &send_thread);
+//	getLog()->registerThread("SaabCan::sendFunc", &send_thread);
 }
 
 void SaabCan::sendCanMessage(CANMessage &msg) {
@@ -57,7 +56,6 @@ void SaabCan::sendCanFrame(int canId, const unsigned char *data) {
 	for (int i = 0; i < canTxFrame->len; i++) {
 		canTxFrame->data[i] = data[i];
 	}
-//	printCanRxFrame(*canTxFrame);
 	canFrameQueue.put(canTxFrame);
 }
 
@@ -67,7 +65,6 @@ void SaabCan::onRx() {
 	while (iBus.read(canRxFrame)) {
 		for(int i=0; i<CAN_MAX_CALLBACKS; i++) {
 			if(callBacks[i].id == canRxFrame.id) {
-//				pcSerial.printf("Received frame id %x, calling callback\r\n", canRxFrame.id);
 				callBacks[i].callBack.call(canRxFrame);
 			}
 		}
@@ -75,32 +72,29 @@ void SaabCan::onRx() {
 }
 
 void SaabCan::sendFunc() {
-    while (true) {
-        osEvent evt = canFrameQueue.get();
-        if (evt.status == osEventMail) {
-        	CANMessage *message = (CANMessage*)evt.value.p;
-        	getLog()->logFrame(message);
-            unsigned tde = iBus.tderror();
-//            if (tde) {
-//            	getLog()->log("send tde=%d --> RESET\r\n", tde);
-//            	iBus.reset();
-//            }
-            int rc = iBus.write(*message);
-            getLog()->log("send rc=%d\r\n", rc);
-            unsigned rde = iBus.rderror();
-            tde = iBus.tderror();
-            getLog()->log("    rde=%d\r\n", rde);
-            getLog()->log("    tde=%d\r\n", tde);
+	while (true) {
+		osEvent evt = canFrameQueue.get();
+		if (evt.status == osEventMail) {
+			CANMessage *message = (CANMessage*) evt.value.p;
+//			getLog()->logFrame(message);
+//			unsigned tde = iBus.tderror();
 
-            uint32_t esr = iBus.read_ESR();
-            getLog()->log("    ESR=%08x\r\n", esr);
-            getLog()->log("    BOFF=%x\r\n", esr&4);
-            getLog()->log("    MCR=%08x\r\n", iBus.read_MCR());
+//			int rc = iBus.write(*message);
+//			getLog()->log("send rc=%d\r\n", rc);
+//			unsigned rde = iBus.rderror();
+//			tde = iBus.tderror();
+//			getLog()->log("    rde=%d\r\n", rde);
+//			getLog()->log("    tde=%d\r\n", tde);
 
-            canFrameQueue.free(message);
-            aliveLed = !aliveLed;
-        }
-    }
+//			uint32_t esr = iBus.read_ESR();
+//			getLog()->log("    ESR=%08x\r\n", esr);
+//			getLog()->log("    BOFF=%x\r\n", esr & 4);
+//			getLog()->log("    MCR=%08x\r\n", iBus.read_MCR());
+
+			canFrameQueue.free(message);
+			aliveLed = !aliveLed;
+		}
+	}
 }
 
 void SaabCan::attach(unsigned int canId, Callback<void(CANMessage&)> callBack) {
@@ -108,7 +102,7 @@ void SaabCan::attach(unsigned int canId, Callback<void(CANMessage&)> callBack) {
 		if(callBacks[i].id == 0) {
 			callBacks[i].callBack = callBack;
 			callBacks[i].id = canId;
-			getLog()->log("SaabCan::attach canId %x", canId);
+//			getLog()->log("SaabCan::attach canId %x", canId);
 			break;
 		}
 	}

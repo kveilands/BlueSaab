@@ -1,3 +1,20 @@
+/* C++ class for SAAB infotainment head unit and steering wheel button event handling
+ * Copyright (C) 2018 Girts Linde
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "Buttons.h"
 #include "Bluetooth.h"
 #include "SidResource.h"
@@ -13,10 +30,6 @@ void Buttons::initialize() {
 
 Buttons::Button decode(unsigned char data1, unsigned char data2) {
 	switch (data1) {
-//	case 0x24:
-//		return Buttons::CDC_MODE_ON;
-//	case 0x14:
-//		return Buttons::CDC_MODE_ON;
 	case 0x59: // NXT
 		return Buttons::NXT;
 	case 0x84: // SEEK button (middle) long press on IHU
@@ -60,8 +73,7 @@ void Buttons::onFrame(CANMessage& frame) {
 
 	Buttons::Button button = decode(frame.data[1], frame.data[2]);
 	if (button != Buttons::NONE) {
-//		callBack.call(button);
-		getLog()->log("Buttons::onFrame button %d", button);
+//		getLog()->log("Buttons::onFrame button %d", button);
 		if (button == Buttons::NXT) {
 			bluetooth.play();
 		}
@@ -72,6 +84,6 @@ void Buttons::onFrame(CANMessage& frame) {
 			bluetooth.prev();
 		}
 	} else {
-		getLog()->log("Buttons::onFrame button unknown");
+//		getLog()->log("Buttons::onFrame button unknown");
 	}
 }

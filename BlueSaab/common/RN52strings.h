@@ -1,27 +1,19 @@
-/*
- * Virtual C++ Class for RovingNetworks RN-52 Bluetooth modules
- * Copyright (C) 2013  Tim Otto
+/* C++ class for handling communications with Microchip RN52 Bluetooth module
+ * Copyright (C) 2018 Girts Linde
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Created by: Tim Otto
- * Created on: Jun 21, 2013
- * Modified by: Sam Thompson
- * Last modified on: Dec 15, 2016
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 #ifndef RN52STRINGS_H_
 #define RN52STRINGS_H_
 
@@ -48,25 +40,25 @@
 #define RN52_SET_MAXVOL             "SS,0F\r"           // Sets the volume gain to MAX level 15 (default 11)
 #define RN52_SET_EXTENDED_FEATURES  "S%,1084\r"
 /*
-	Bit 0 – Enable AVRCP buttons for EK
-	Bit 1 – Enable reconnect on power-on
->	Bit 2 – Discoverable on start up
-	Bit 3 – Codec indicators PIO7 (AAC) and PIO6 (aptX)
+ Bit 0 – Enable AVRCP buttons for EK
+ Bit 1 – Enable reconnect on power-on
+ >	Bit 2 – Discoverable on start up
+ Bit 3 – Codec indicators PIO7 (AAC) and PIO6 (aptX)
 
-	Bit 4 – Reboot after disconnect
-	Bit 5 – Mute volume up/down tones
-	Bit 6 – Enable voice command button on PIO4
->	Bit 7 – Disable system tones
+ Bit 4 – Reboot after disconnect
+ Bit 5 – Mute volume up/down tones
+ Bit 6 – Enable voice command button on PIO4
+ >	Bit 7 – Disable system tones
 
-	Bit 8 – Power off after pairing timeout
-	Bit 9 – Reset after power off
-	Bit 10 – Enable list reconnect after panic
-	Bit 11 – Enable latch event indicator PIO2
+ Bit 8 – Power off after pairing timeout
+ Bit 9 – Reset after power off
+ Bit 10 – Enable list reconnect after panic
+ Bit 11 – Enable latch event indicator PIO2
 
->	Bit 12 – Enable track change event
-	Bit 13 – Enable tones playback at fixed volume
-	Bit 14 – Enable auto-accept passkey in Keyboard I/O Authentication mode
-*/
+ >	Bit 12 – Enable track change event
+ Bit 13 – Enable tones playback at fixed volume
+ Bit 14 – Enable auto-accept passkey in Keyboard I/O Authentication mode
+ */
 
 // AVRCP commands
 #define RN52_CMD_AVCRP_NEXT         "AT+\r"
@@ -80,6 +72,5 @@
 #define RN52_RX_ERROR               "ERR\r\n"
 #define RN52_RX_WHAT                "?\r\n"
 #define RN52_RX_REBOOT              "Reboot!"
-
 
 #endif /* RN52STRINGS_H_ */
