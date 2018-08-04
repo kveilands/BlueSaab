@@ -25,7 +25,7 @@ SaabCan saabCan;
 
 unsigned long cdcStatusLastSendTime = 0;						// Timer used to ensure we send the CDC status frame in a timely manner
 unsigned long lastIcomingEventTime = 0; 						// Timer used for determining if we should treat current event as, for example, a long press of a button
-int incomingEventCounter = 0; 								    // Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
+int incomingEventCounter = 0; 									// Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
 
 void SaabCan::initialize(int hz) {
 	if (iBus.frequency(hz) && iBus.mode(CAN::Normal)) {
@@ -63,8 +63,8 @@ extern DigitalOut aliveLed;
 
 void SaabCan::onRx() {
 	while (iBus.read(canRxFrame)) {
-		for(int i=0; i<CAN_MAX_CALLBACKS; i++) {
-			if(callBacks[i].id == canRxFrame.id) {
+		for (int i = 0; i < CAN_MAX_CALLBACKS; i++) {
+			if (callBacks[i].id == canRxFrame.id) {
 				callBacks[i].callBack.call(canRxFrame);
 			}
 		}
@@ -98,8 +98,8 @@ void SaabCan::sendFunc() {
 }
 
 void SaabCan::attach(unsigned int canId, Callback<void(CANMessage&)> callBack) {
-	for(int i=0; i<CAN_MAX_CALLBACKS; i++) {
-		if(callBacks[i].id == 0) {
+	for (int i = 0; i < CAN_MAX_CALLBACKS; i++) {
+		if (callBacks[i].id == 0) {
 			callBacks[i].callBack = callBack;
 			callBacks[i].id = canId;
 //			getLog()->log("SaabCan::attach canId %x", canId);
