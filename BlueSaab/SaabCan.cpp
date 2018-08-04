@@ -23,10 +23,6 @@ CAN iBus(PB_8, PB_9);
 CANMessage canRxFrame;
 SaabCan saabCan;
 
-unsigned long cdcStatusLastSendTime = 0;						// Timer used to ensure we send the CDC status frame in a timely manner
-unsigned long lastIcomingEventTime = 0; 						// Timer used for determining if we should treat current event as, for example, a long press of a button
-int incomingEventCounter = 0; 									// Counter for incoming events to determine when we will treat the event, for example, as a long press of a button
-
 void SaabCan::initialize(int hz) {
 	if (iBus.frequency(hz) && iBus.mode(CAN::Normal)) {
 //		getLog()->log("CAN OK\r\n");
@@ -77,19 +73,19 @@ void SaabCan::sendFunc() {
 		if (evt.status == osEventMail) {
 			CANMessage *message = (CANMessage*) evt.value.p;
 //			getLog()->logFrame(message);
-//			unsigned tde = iBus.tderror();
+			unsigned tde = iBus.tderror();
 
-//			int rc = iBus.write(*message);
-//			getLog()->log("send rc=%d\r\n", rc);
-//			unsigned rde = iBus.rderror();
-//			tde = iBus.tderror();
-//			getLog()->log("    rde=%d\r\n", rde);
-//			getLog()->log("    tde=%d\r\n", tde);
+			int rc = iBus.write(*message);
+			getLog()->log("send rc=%d\r\n", rc);
+			unsigned rde = iBus.rderror();
+			tde = iBus.tderror();
+			getLog()->log("    rde=%d\r\n", rde);
+			getLog()->log("    tde=%d\r\n", tde);
 
-//			uint32_t esr = iBus.read_ESR();
-//			getLog()->log("    ESR=%08x\r\n", esr);
-//			getLog()->log("    BOFF=%x\r\n", esr & 4);
-//			getLog()->log("    MCR=%08x\r\n", iBus.read_MCR());
+			uint32_t esr = iBus.read_ESR();
+			getLog()->log("    ESR=%08x\r\n", esr);
+			getLog()->log("    BOFF=%x\r\n", esr & 4);
+			getLog()->log("    MCR=%08x\r\n", iBus.read_MCR());
 
 			canFrameQueue.free(message);
 			aliveLed = !aliveLed;
