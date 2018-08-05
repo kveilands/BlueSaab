@@ -178,12 +178,10 @@ void RN52impl::run() {
 									// The strings after Title= and Artist= seem to be limited to 60 chars,
 									// plus \r\r\n. Which makes it max 70 chars total.
 									if (isCmd(gotBuf->buf, "Title=")) {
-										copy_text(title, (gotBuf->buf) + 6,
-												sizeof(title));
+										copy_text(title, (gotBuf->buf) + 6, sizeof(title));
 //										getLog()->log("t=%s\r\n", (int) title);
 									} else if (isCmd(gotBuf->buf, "Artist=")) {
-										copy_text(artist, (gotBuf->buf) + 7,
-												sizeof(artist));
+										copy_text(artist, (gotBuf->buf) + 7, sizeof(artist));
 //										getLog()->log("a=%s\r\n", (int) artist);
 									} else {
 //										getLog()->logShortString(gotBuf->buf);
