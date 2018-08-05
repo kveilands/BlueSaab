@@ -25,7 +25,7 @@ Bluetooth::Bluetooth() {
 
 void Bluetooth::initialize() {
 	impl.initialize();
-//	getLog()->attachRXCallback(callback(this, &Bluetooth::handleDebugChar));
+	getLog()->attachRXCallback(callback(this, &Bluetooth::handleDebugChar));
 }
 
 void Bluetooth::play() {

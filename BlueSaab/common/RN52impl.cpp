@@ -203,7 +203,7 @@ void RN52impl::run() {
 										strncpy(title, gotBuf->buf,
 												sizeof(title)); // May not zero terminate
 										title[sizeof(title) - 1] = 0;
-//										getLog()->log(title);
+										getLog()->log(title);
 									}
 									rx_mail_box.free(gotBuf);
 								} else {

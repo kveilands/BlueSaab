@@ -74,14 +74,21 @@ void Buttons::onFrame(CANMessage& frame) {
 	Buttons::Button button = decode(frame.data[1], frame.data[2]);
 	if (button != Buttons::NONE) {
 //		getLog()->log("Buttons::onFrame button %d", button);
-		if (button == Buttons::NXT) {
+		switch (button) {
+		case Buttons::NXT:
 			bluetooth.play();
-		}
-		if (button == Buttons::TRACK_PLUS) {
+			break;
+		case Buttons::TRACK_PLUS:
 			bluetooth.next();
-		}
-		if (button == Buttons::TRACK_MINUS) {
+			break;
+		case Buttons::TRACK_MINUS:
 			bluetooth.prev();
+			break;
+		case Buttons::SEEK_EXTRA_LONG:
+			bluetooth.visible();
+			break;
+		default:
+			break;
 		}
 	} else {
 //		getLog()->log("Buttons::onFrame button unknown");
