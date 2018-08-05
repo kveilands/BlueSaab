@@ -73,19 +73,20 @@ void SaabCan::sendFunc() {
 		if (evt.status == osEventMail) {
 			CANMessage *message = (CANMessage*) evt.value.p;
 //			getLog()->logFrame(message);
-			unsigned tde = iBus.tderror();
+//			unsigned tde = iBus.tderror();
 
-			int rc = iBus.write(*message);
-			getLog()->log("send rc=%d\r\n", rc);
-			unsigned rde = iBus.rderror();
-			tde = iBus.tderror();
-			getLog()->log("    rde=%d\r\n", rde);
-			getLog()->log("    tde=%d\r\n", tde);
-
-			uint32_t esr = iBus.read_ESR();
-			getLog()->log("    ESR=%08x\r\n", esr);
-			getLog()->log("    BOFF=%x\r\n", esr & 4);
-			getLog()->log("    MCR=%08x\r\n", iBus.read_MCR());
+//			int rc =
+			iBus.write(*message);
+//			getLog()->log("send rc=%d\r\n", rc);
+//			unsigned rde = iBus.rderror();
+//			tde = iBus.tderror();
+//			getLog()->log("    rde=%d\r\n", rde);
+//			getLog()->log("    tde=%d\r\n", tde);
+//
+//			uint32_t esr = iBus.read_ESR();
+//			getLog()->log("    ESR=%08x\r\n", esr);
+//			getLog()->log("    BOFF=%x\r\n", esr & 4);
+//			getLog()->log("    MCR=%08x\r\n", iBus.read_MCR());
 
 			canFrameQueue.free(message);
 			aliveLed = !aliveLed;

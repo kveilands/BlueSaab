@@ -30,6 +30,7 @@ struct RXEntry {
 class RN52impl: public RN52::RN52driver {
 	Mail<RXEntry, 4> rx_mail_box;
 	RXEntry *curRXEntry;
+	Timeout timeout;
 
 	void onProfileChange(BtProfile profile, bool connected);
 

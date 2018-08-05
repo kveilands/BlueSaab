@@ -32,7 +32,11 @@ void RN52impl::onProfileChange(BtProfile profile, bool connected) {
 	switch (profile) {
 	case A2DP:
 		bt_a2dp = connected;
-		if (connected && playing) {sendAVCRP(RN52::RN52driver::PLAYPAUSE);}
+		if (connected && playing) {
+			sendAVCRP(RN52::RN52driver::PLAYPAUSE);
+			// Ask for track data a bit later, to give the phone some time to start playing
+			timeout.attach(callback(this, &RN52driver::getTrackData), 3.0);
+		}
 		break;
 	case SPP:
 		bt_spp = connected;

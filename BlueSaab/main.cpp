@@ -40,9 +40,9 @@ Thread logThread(osPriorityLow, 1024);
 int main() {
 	logThread.start(callback(getLog(), &SerialLog::run));
 
-	getLog()->log("BlueSaab");
-	getLog()->log("Hardware version: 6.1");
-	getLog()->log("Firmware version: 6.1");
+	getLog()->log("BlueSaab\r\n");
+	getLog()->log("Hardware version: 6.1\r\n");
+	getLog()->log("Firmware version: 6.1\r\n");
 //	getLog()->registerThread("logThread", &logThread);
 
 	aliveLed = 1;
