@@ -59,6 +59,7 @@ OBJECTS += CDCStatus.o
 OBJECTS += MessageSender.o
 OBJECTS += SidResource.o
 OBJECTS += can_api.o
+OBJECTS += utf_convert.o
 
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o

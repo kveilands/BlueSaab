@@ -16,6 +16,7 @@
  */
 
 #include "Scroller.h"
+#include "utf_convert.h"
 
 Scroller scroller;
 
@@ -37,8 +38,8 @@ void Scroller::clear() {
 
 void Scroller::set_info(const char *artist_,const char *title_) {
 	info_lock.wait();
-	strncpy(artist, artist_, ARTIST_BUF_SIZE - 1);
-	strncpy(title, title_, TITLE_BUF_SIZE - 1);
+	utf_convert(artist_, artist, sizeof(artist));
+	utf_convert(title_, title, sizeof(title));
 	position = 0;
 	info_lock.release();
 }
