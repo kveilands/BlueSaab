@@ -20,64 +20,49 @@
 
 Bluetooth bluetooth;
 
-Bluetooth::Bluetooth() {
-}
-
 void Bluetooth::initialize() {
-	impl.initialize();
+	rn52.initialize();
 	getLog()->attachRXCallback(callback(this, &Bluetooth::handleDebugChar));
 }
 
 void Bluetooth::play() {
-	impl.sendAVCRP(RN52::RN52driver::PLAYPAUSE);
+	rn52.sendAVCRP(RN52::PLAYPAUSE);
 }
 
 void Bluetooth::prev() {
-	impl.sendAVCRP(RN52::RN52driver::PREV);
+	rn52.sendAVCRP(RN52::PREV);
 }
 
 void Bluetooth::next() {
-	impl.sendAVCRP(RN52::RN52driver::NEXT);
+	rn52.sendAVCRP(RN52::NEXT);
 }
 
 void Bluetooth::vassistant() {
-	impl.sendAVCRP(RN52::RN52driver::VASSISTANT);
-}
-
-void Bluetooth::volup() {
-	impl.sendAVCRP(RN52::RN52driver::VOLUP);
-}
-
-void Bluetooth::voldown() {
-	impl.sendAVCRP(RN52::RN52driver::VOLDOWN);
+	rn52.sendAVCRP(RN52::VASSISTANT);
 }
 
 void Bluetooth::visible() {
-	impl.visible(true);
+	rn52.visible(true);
 }
 
 void Bluetooth::invisible() {
-	impl.visible(false);
+	rn52.visible(false);
 }
 
 void Bluetooth::reconnect() {
-	impl.reconnectLast();
+	rn52.reconnectLast();
 }
 
 void Bluetooth::disconnect() {
-	impl.disconnect();
-}
-
-void Bluetooth::setMaxVol() {
-	impl.setMaxVolume();
+	rn52.disconnect();
 }
 
 void Bluetooth::reboot() {
-	impl.reboot();
+	rn52.reboot();
 }
 
 void Bluetooth::getDetails() {
-	impl.getDetails();
+	rn52.getDetails();
 }
 
 void Bluetooth::handleDebugChar(char c) {

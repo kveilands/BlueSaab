@@ -1,5 +1,6 @@
 /* C++ class for handling communications with Microchip RN52 Bluetooth module
- * Copyright (C) 2018 Girts Linde
+ * Copyright (C) 2013  Tim Otto
+ * Copyright (C) 2018  Girts Linde
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

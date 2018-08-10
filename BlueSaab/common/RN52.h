@@ -13,13 +13,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://github.com/timotto/RN52lib by Tim Otto used as the starting point.
  */
 
-#ifndef RN52impl_H
-#define RN52impl_H
+#ifndef RN52_H
+#define RN52_H
 
-#include "mbed.h"
-#include "RN52driver.h"
+#include <mbed.h>
+#include <rtos.h>
 
 const int RX_BUF_SIZE = 80;
 
@@ -27,52 +29,50 @@ struct RXEntry {
 	char buf[RX_BUF_SIZE];
 };
 
-class RN52impl: public RN52::RN52driver {
+class RN52 {
 	Mail<RXEntry, 4> rx_mail_box;
 	RXEntry *curRXEntry;
 	Timeout timeout;
-
-	void onProfileChange(BtProfile profile, bool connected);
+	Thread thread;
+	Queue<const char, 20> rtosQueue;
 
 	Serial serial;
 
-	bool playing;
-	bool bt_iap;
-	bool bt_spp;
-	bool bt_a2dp;
-	bool bt_hfp;
-
+	bool a2dpConnected;
 	DigitalOut bt_cmd_pin;
 	DigitalOut bt_pwren_pin;
 	InterruptIn bt_event_pin;
 
-	Thread thread;
+	int queueCommand(const char *cmd);
+	void onA2DPProfileChange(bool connected);
+	RXEntry* waitForRXLine(uint32_t timeout);
+	void onSerialRX(int p);
+	void clearRXMail();
+	void onGPIO2();
+	void run();
+	bool parseQResponse(const char data[4]);
 
-	public:
+public:
+	enum AVCRP {PLAYPAUSE, NEXT, PREV, VASSISTANT, VOLUP, VOLDOWN};
 
-		RN52impl() :
-			curRXEntry(NULL), serial(PA_9, PA_10, 115200) // UART1 Tx/Rx
-			, bt_cmd_pin(PA_7)
-			, bt_pwren_pin(PC_8)
-			, bt_event_pin(PB_0)
-			, thread(osPriorityNormal, 512) {
-			playing = true;
-			bt_iap = false;
-			bt_spp = false;
-			bt_a2dp = false;
-			bt_hfp = false;
-		}
+	RN52()
+		: curRXEntry(NULL)
+		, thread(osPriorityNormal, 512)
+		, serial(PA_9, PA_10, 115200) // UART1 Tx/Rx
+		, a2dpConnected(false)
+		, bt_cmd_pin(PA_7)
+		, bt_pwren_pin(PC_8)
+		, bt_event_pin(PB_0)
+	{}
+	void initialize();
+	void sendAVCRP(AVCRP cmd);
 
-		void toUART(const char* c);
-		void onError(int location, Error error);
-		void onGPIO2();
-		void initialize();
-		void run();
-
-	private:
-		RXEntry* waitForRXLine(uint32_t timeout);
-		void onSerialRX(int p);
-		void clearRXMail();
+	void reconnectLast();
+	void disconnect();
+	void getDetails();
+	void getTrackData();
+	void visible(bool visible);
+	void reboot();
 };
 
 #endif

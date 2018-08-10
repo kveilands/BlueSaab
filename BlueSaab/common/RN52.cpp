@@ -13,69 +13,68 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://github.com/timotto/RN52lib by Tim Otto used as the starting point.
  */
 
-#include "RN52impl.h"
+#include <common/RN52.h>
 #include "RN52strings.h"
-#include <string.h>
+#include <ctype.h>
 
 #include "SerialLog.h"
 #include "Scroller.h"
 
-void RN52impl::toUART(const char* c){serial.puts(c);};
+static int getVal(char c) {
+	if (c >= '0' && c <= '9')
+		return (c - '0');
+	else
+		return (c - 'A' + 10);
+}
 
-void RN52impl::onError(int location, Error error){};
+void RN52::onGPIO2() {
+	queueCommand(RN52_CMD_QUERY);
+}
 
-void RN52impl::onGPIO2() {queueCommand(RN52_CMD_QUERY);}
-
-void RN52impl::onProfileChange(BtProfile profile, bool connected) {
-	switch (profile) {
-	case A2DP:
-		bt_a2dp = connected;
-		if (connected && playing) {
-			sendAVCRP(RN52::RN52driver::PLAYPAUSE);
-			// Ask for track data a bit later, to give the phone some time to start playing
-			timeout.attach(callback(this, &RN52driver::getTrackData), 3.0);
-		}
-		break;
-	case SPP:
-		bt_spp = connected;
-		break;
-	case IAP:
-		bt_iap = connected;
-		break;
-	case HFP:
-		bt_hfp = connected;
-		break;
+void RN52::onA2DPProfileChange(bool connected) {
+	if (connected) {
+		sendAVCRP(RN52::PLAYPAUSE);
+		// Ask for track data a bit later, to give the phone some time to start playing
+		timeout.attach(callback(this, &RN52::getTrackData), 3.0);
 	}
 }
 
-void RN52impl::initialize() {
+void RN52::initialize() {
 	curRXEntry = rx_mail_box.alloc();
-	serial.read((uint8_t*) curRXEntry->buf, sizeof(curRXEntry->buf), callback(this, &RN52impl::onSerialRX), SERIAL_EVENT_RX_ALL, '\n');
+	serial.read((uint8_t*) curRXEntry->buf, sizeof(curRXEntry->buf), callback(this, &RN52::onSerialRX), SERIAL_EVENT_RX_ALL, '\n');
 
-	thread.start(callback(this, &RN52impl::run));
-//	getLog()->registerThread("RN52impl::run", &thread);
+	thread.start(callback(this, &RN52::run));
+//	getLog()->registerThread("RN52::run", &thread);
 
 	bt_pwren_pin = 1;
 	bt_cmd_pin = 1;
 
 	getLog()->log("Configuring RN52...\r\n");
-	setDiscoveryMask();
-	setConnectionMask();
-	setCod();
-	setDeviceName();
-	setExtendedFeatures();
-	setMaxVolume();
-	setPairTimeout();
+	queueCommand(RN52_SET_DISCOVERY_MASK);
+	queueCommand(RN52_SET_CONNECTION_MASK);
+	queueCommand(RN52_SET_COD);
+	queueCommand(RN52_SET_DEVICE_NAME);
+	queueCommand(RN52_SET_EXTENDED_FEATURES);
+	queueCommand(RN52_SET_MAXVOL);
+	queueCommand(RN52_SET_PAIR_TIMEOUT);
 	reboot();
 	Thread::wait(5000);
 	getLog()->log("RN52 configuration completed!\r\n");
 
-	bt_event_pin.fall(callback(this, &RN52impl::onGPIO2));
+	bt_event_pin.fall(callback(this, &RN52::onGPIO2));
 }
 
-RXEntry* RN52impl::waitForRXLine(uint32_t timeout) {
+int RN52::queueCommand(const char *cmd) {
+//	getLog()->log("queue: %s\r\n", (int) cmd);
+	rtosQueue.put(cmd);
+	return 0;
+}
+
+RXEntry* RN52::waitForRXLine(uint32_t timeout) {
 
 	osEvent evt = rx_mail_box.get(timeout);
 	if (evt.status == osEventMail) {
@@ -91,7 +90,7 @@ RXEntry* RN52impl::waitForRXLine(uint32_t timeout) {
 	return NULL;
 }
 
-void RN52impl::onSerialRX(int p) {
+void RN52::onSerialRX(int p) {
 	if (p & (SERIAL_EVENT_RX_CHARACTER_MATCH | SERIAL_EVENT_RX_COMPLETE)) {
 		RXEntry *newEntry = rx_mail_box.alloc();
 		if (newEntry == NULL) {
@@ -102,10 +101,10 @@ void RN52impl::onSerialRX(int p) {
 		}
 	}
 
-	serial.read((uint8_t*) curRXEntry->buf, sizeof(curRXEntry->buf), callback(this, &RN52impl::onSerialRX), SERIAL_EVENT_RX_ALL, '\n');
+	serial.read((uint8_t*) curRXEntry->buf, sizeof(curRXEntry->buf), callback(this, &RN52::onSerialRX), SERIAL_EVENT_RX_ALL, '\n');
 }
 
-void RN52impl::clearRXMail() {
+void RN52::clearRXMail() {
 	int n = 0;
 	for (;;) {
 		osEvent evt = rx_mail_box.get(0);
@@ -141,8 +140,8 @@ void copy_text(char *to, const char *from, int max_len) {
 	}
 }
 
-void RN52impl::run() {
-//	getLog()->log("RN52impl::run() started\r\n");
+void RN52::run() {
+//	getLog()->log("RN52::run() started\r\n");
 
 	osEvent evt;
 	evt.status = osOK;
@@ -164,7 +163,7 @@ void RN52impl::run() {
 					if (evt.status == osEventMessage) {
 						const char *cmd = (const char*) evt.value.p;
 //						getLog()->log("send: %s", (int) cmd);
-						toUART(cmd);
+						serial.puts(cmd);
 						evt.status = osOK;
 
 						if (isCmd(cmd, RN52_CMD_GET_TRACK_DATA)) { // Gather track info until timeout
@@ -245,5 +244,80 @@ void RN52impl::run() {
 			rx_mail_box.free(gotBuf);
 		}
 	}
-
 }
+
+bool RN52::parseQResponse(const char data[4]) {
+	for (int i = 0; i < 4; i++) {
+		if (!isxdigit(data[i]))
+			return false;
+	}
+
+	int profile = (getVal(data[0]) << 4 | getVal(data[1])) & 0x0f;
+	//int state = (getVal(data[2]) << 4 | getVal(data[3])) & 0x0f;
+
+	bool lastA2dpConnected = a2dpConnected;
+	a2dpConnected = profile & 0x04;
+
+	bool trackChanged = getVal(data[0]) & 0x02;
+
+	if (lastA2dpConnected != a2dpConnected) onA2DPProfileChange(a2dpConnected);
+	if (trackChanged) getTrackData();
+	return true;
+}
+
+
+void RN52::sendAVCRP(AVCRP cmd) {
+	if (!a2dpConnected) {
+		return;
+	}
+
+	switch (cmd) {
+	case PLAYPAUSE:
+		queueCommand(RN52_CMD_AVCRP_PLAYPAUSE);
+		break;
+	case PREV:
+		queueCommand(RN52_CMD_AVCRP_PREV);
+		break;
+	case NEXT:
+		queueCommand(RN52_CMD_AVCRP_NEXT);
+		break;
+	case VASSISTANT:
+		queueCommand(RN52_CMD_AVCRP_VASSISTANT);
+		break;
+	case VOLUP:
+		queueCommand(RN52_CMD_VOLUP);
+		break;
+	case VOLDOWN:
+		queueCommand(RN52_CMD_VOLDOWN);
+		break;
+	}
+}
+
+void RN52::reconnectLast() {
+	queueCommand(RN52_CMD_RECONNECTLAST);
+}
+
+void RN52::disconnect() {
+	queueCommand(RN52_CMD_DISCONNECT);
+}
+
+void RN52::getDetails() {
+	queueCommand(RN52_CMD_DETAILS);
+}
+
+void RN52::getTrackData() {
+	queueCommand(RN52_CMD_GET_TRACK_DATA);
+}
+
+void RN52::visible(bool visible) {
+	if (visible) {
+		queueCommand(RN52_CMD_DISCOVERY_ON);
+	} else {
+		queueCommand(RN52_CMD_DISCOVERY_OFF);
+	}
+}
+
+void RN52::reboot() {
+	queueCommand(RN52_CMD_REBOOT);
+}
+
