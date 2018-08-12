@@ -41,6 +41,7 @@ class RN52 {
 	void onA2DPProfileChange(bool connected);
 	void onGPIO2();
 	void run();
+	void processCommand(const char *cmd);
 	bool parseQResponse(const char data[4]);
 
 public:

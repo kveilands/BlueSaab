@@ -93,6 +93,72 @@ static void copy_text(char *to, const char *from, int max_len) {
 	}
 }
 
+void RN52::processCommand(const char *cmd) {
+	//getLog()->log("send: %s", (int) cmd);
+	serial.puts(cmd);
+
+	if (isCmd(cmd, RN52_CMD_GET_TRACK_DATA)) { // Gather track info until timeout
+		int lines = 0;
+		title[0] = 0;
+		artist[0] = 0;
+		while (true) {
+			RXEntry* gotBuf = serialRX.waitForRXLine(100);
+			if (gotBuf) {
+				lines++;
+				// The strings after Title= and Artist= seem to be limited to 60 chars,
+				// plus \r\r\n. Which makes it max 70 chars total.
+				if (isCmd(gotBuf->buf, "Title=")) {
+					copy_text(title, (gotBuf->buf) + 6, sizeof(title));
+					//getLog()->log("t=%s\r\n", (int) title);
+				} else if (isCmd(gotBuf->buf, "Artist=")) {
+					copy_text(artist, (gotBuf->buf) + 7, sizeof(artist));
+					//getLog()->log("a=%s\r\n", (int) artist);
+				} else {
+					//getLog()->logShortString(gotBuf->buf);
+				}
+				serialRX.free(gotBuf);
+			} else {
+				//getLog()->log("track info response %d lines\r\n", lines);
+				break;
+			}
+		}
+		scroller.set_info(artist, title);
+	} else if (isCmd(cmd, RN52_CMD_DETAILS)) { // Gather details until timeout
+		int lines = 0;
+		while (true) {
+			RXEntry* gotBuf = serialRX.waitForRXLine(100);
+			if (gotBuf) {
+				lines++;
+				if (isCmd(gotBuf->buf, "BTA=")) {
+					strncpy(title, gotBuf->buf, sizeof(title)); // May not zero terminate
+					title[sizeof(title) - 1] = 0;
+					getLog()->log(title);
+				}
+				serialRX.free(gotBuf);
+			} else {
+				//getLog()->log("details response %d lines\r\n", lines);
+				break;
+			}
+		}
+	} else if (isCmd(cmd, RN52_CMD_QUERY)) {
+		RXEntry* gotBuf = serialRX.waitForRXLine(500);
+		if (gotBuf) {
+			//getLog()->logShortString(gotBuf->buf);
+			if (strlen((char *) gotBuf->buf) != 6 || !parseQResponse((char *) gotBuf->buf)) {
+				// If the response is not in the format we expected, then ask again.
+				queueCommand(RN52_CMD_QUERY);
+			}
+			serialRX.free(gotBuf);
+		}
+	} else {
+		RXEntry* gotBuf = serialRX.waitForRXLine(500);
+		if (gotBuf) {
+			//getLog()->logShortString(gotBuf->buf);
+			serialRX.free(gotBuf);
+		}
+	}
+}
+
 void RN52::run() {
 //	getLog()->log("RN52::run() started\r\n");
 
@@ -112,78 +178,16 @@ void RN52::run() {
 			serialRX.free(gotBuf);
 
 			if (gotCMD) {
+				// Got "CMD" from RN52, so it is now in command mode. Let's send commands.
 				for (;;) {
 					if (evt.status == osEventMessage) {
-						const char *cmd = (const char*) evt.value.p;
-//						getLog()->log("send: %s", (int) cmd);
-						serial.puts(cmd);
 						evt.status = osOK;
-
-						if (isCmd(cmd, RN52_CMD_GET_TRACK_DATA)) { // Gather track info until timeout
-							int lines = 0;
-							title[0] = 0;
-							artist[0] = 0;
-							while (true) {
-								gotBuf = serialRX.waitForRXLine(100);
-								if (gotBuf) {
-									lines++;
-									// The strings after Title= and Artist= seem to be limited to 60 chars,
-									// plus \r\r\n. Which makes it max 70 chars total.
-									if (isCmd(gotBuf->buf, "Title=")) {
-										copy_text(title, (gotBuf->buf) + 6, sizeof(title));
-//										getLog()->log("t=%s\r\n", (int) title);
-									} else if (isCmd(gotBuf->buf, "Artist=")) {
-										copy_text(artist, (gotBuf->buf) + 7, sizeof(artist));
-//										getLog()->log("a=%s\r\n", (int) artist);
-									} else {
-//										getLog()->logShortString(gotBuf->buf);
-									}
-									serialRX.free(gotBuf);
-								} else {
-//									getLog()->log("track info response %d lines\r\n", lines);
-									break;
-								}
-							}
-							scroller.set_info(artist, title);
-						} else if (isCmd(cmd, RN52_CMD_DETAILS)) { // Gather details until timeout
-							int lines = 0;
-							while (true) {
-								gotBuf = serialRX.waitForRXLine(100);
-								if (gotBuf) {
-									lines++;
-									if (isCmd(gotBuf->buf, "BTA=")) {
-										strncpy(title, gotBuf->buf,
-												sizeof(title)); // May not zero terminate
-										title[sizeof(title) - 1] = 0;
-										getLog()->log(title);
-									}
-									serialRX.free(gotBuf);
-								} else {
-//									getLog()->log("details response %d lines\r\n", lines);
-									break;
-								}
-							}
-						} else if (isCmd(cmd, RN52_CMD_QUERY)) {
-							gotBuf = serialRX.waitForRXLine(500);
-							if (gotBuf) {
-//								getLog()->logShortString(gotBuf->buf);
-								if (strlen((char *) gotBuf->buf) != 6
-										|| !parseQResponse(
-												(char *) gotBuf->buf)) {
-									queueCommand(RN52_CMD_QUERY);
-								}
-								serialRX.free(gotBuf);
-							}
-						} else {
-							gotBuf = serialRX.waitForRXLine(500);
-							if (gotBuf) {
-//								getLog()->logShortString(gotBuf->buf);
-								serialRX.free(gotBuf);
-							}
-						}
+						const char *cmd = (const char*) evt.value.p;
+						processCommand(cmd);
 					}
 					evt = rtosQueue.get(500);
 					if (evt.status == osEventTimeout) {
+						// No more commands in the queue for 500ms, let's leave the command mode.
 						break;
 					}
 				}
