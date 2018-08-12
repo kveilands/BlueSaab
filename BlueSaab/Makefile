@@ -52,6 +52,7 @@ OBJECTS += common/SerialLog.o
 OBJECTS += SaabCan.o
 OBJECTS += common/Bluetooth.o
 OBJECTS += common/RN52.o
+OBJECTS += common/SerialRX.o
 OBJECTS += Scroller.o
 OBJECTS += Buttons.o
 OBJECTS += CDCStatus.o

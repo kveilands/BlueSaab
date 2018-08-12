@@ -22,21 +22,15 @@
 
 #include <mbed.h>
 #include <rtos.h>
-
-const int RX_BUF_SIZE = 80;
-
-struct RXEntry {
-	char buf[RX_BUF_SIZE];
-};
+#include "SerialRX.h"
 
 class RN52 {
-	Mail<RXEntry, 4> rx_mail_box;
-	RXEntry *curRXEntry;
 	Timeout timeout;
 	Thread thread;
 	Queue<const char, 20> rtosQueue;
 
 	Serial serial;
+	SerialRX serialRX;
 
 	bool a2dpConnected;
 	DigitalOut bt_cmd_pin;
@@ -45,9 +39,6 @@ class RN52 {
 
 	int queueCommand(const char *cmd);
 	void onA2DPProfileChange(bool connected);
-	RXEntry* waitForRXLine(uint32_t timeout);
-	void onSerialRX(int p);
-	void clearRXMail();
 	void onGPIO2();
 	void run();
 	bool parseQResponse(const char data[4]);
@@ -56,9 +47,9 @@ public:
 	enum AVCRP {PLAYPAUSE, NEXT, PREV, VASSISTANT, VOLUP, VOLDOWN};
 
 	RN52()
-		: curRXEntry(NULL)
-		, thread(osPriorityNormal, 512)
+		: thread(osPriorityNormal, 512)
 		, serial(PA_9, PA_10, 115200) // UART1 Tx/Rx
+		, serialRX(serial)
 		, a2dpConnected(false)
 		, bt_cmd_pin(PA_7)
 		, bt_pwren_pin(PC_8)

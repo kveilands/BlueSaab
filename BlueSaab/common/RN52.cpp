@@ -17,7 +17,7 @@
  * https://github.com/timotto/RN52lib by Tim Otto used as the starting point.
  */
 
-#include <common/RN52.h>
+#include "RN52.h"
 #include "RN52strings.h"
 #include <ctype.h>
 
@@ -44,8 +44,7 @@ void RN52::onA2DPProfileChange(bool connected) {
 }
 
 void RN52::initialize() {
-	curRXEntry = rx_mail_box.alloc();
-	serial.read((uint8_t*) curRXEntry->buf, sizeof(curRXEntry->buf), callback(this, &RN52::onSerialRX), SERIAL_EVENT_RX_ALL, '\n');
+	serialRX.initialize();
 
 	thread.start(callback(this, &RN52::run));
 //	getLog()->registerThread("RN52::run", &thread);
@@ -74,52 +73,6 @@ int RN52::queueCommand(const char *cmd) {
 	return 0;
 }
 
-RXEntry* RN52::waitForRXLine(uint32_t timeout) {
-
-	osEvent evt = rx_mail_box.get(timeout);
-	if (evt.status == osEventMail) {
-		RXEntry *e = (RXEntry*) evt.value.p;
-		char *curBuf = e->buf;
-		curBuf[RX_BUF_SIZE - 1] = 0; // Zero terminate the whole buffer to be safe
-		char *pos = strchr(curBuf, '\n');
-		if (pos) {
-			*(pos + 1) = 0; // Zero terminate received data
-		}
-		return e;
-	}
-	return NULL;
-}
-
-void RN52::onSerialRX(int p) {
-	if (p & (SERIAL_EVENT_RX_CHARACTER_MATCH | SERIAL_EVENT_RX_COMPLETE)) {
-		RXEntry *newEntry = rx_mail_box.alloc();
-		if (newEntry == NULL) {
-//			getLog()->log("NO MAIL TO ALLOC, drop and reuse\r\n");
-		} else {
-			rx_mail_box.put(curRXEntry);
-			curRXEntry = newEntry;
-		}
-	}
-
-	serial.read((uint8_t*) curRXEntry->buf, sizeof(curRXEntry->buf), callback(this, &RN52::onSerialRX), SERIAL_EVENT_RX_ALL, '\n');
-}
-
-void RN52::clearRXMail() {
-	int n = 0;
-	for (;;) {
-		osEvent evt = rx_mail_box.get(0);
-		if (evt.status == osEventMail) {
-			RXEntry *e = (RXEntry*) evt.value.p;
-			rx_mail_box.free(e);
-			n++;
-		} else {
-			break;
-		}
-	}
-//	if (n > 0)
-//		getLog()->log("%d mails cleared\r\n", n);
-}
-
 static bool isCmd(const char *buffer, const char *cmd) {
 	return strncmp(buffer, cmd, strlen(cmd)) == 0;
 }
@@ -127,7 +80,7 @@ static bool isCmd(const char *buffer, const char *cmd) {
 char title[72];
 char artist[72];
 
-void copy_text(char *to, const char *from, int max_len) {
+static void copy_text(char *to, const char *from, int max_len) {
 	to[max_len - 1] = 0;
 	for (int i = 0; i < max_len - 1; ++i) {
 		if (*from == 0 || *from == '\r' || *from == '\n') {
@@ -150,13 +103,13 @@ void RN52::run() {
 			evt = rtosQueue.get();
 		}
 //		getLog()->log("Entering cmd mode\r\n");
-		clearRXMail();
+		serialRX.clearRXMail();
 		bt_cmd_pin.write(0);
-		RXEntry* gotBuf = waitForRXLine(500); // get command
+		RXEntry* gotBuf = serialRX.waitForRXLine(500); // get command
 		if (gotBuf) {
 //			getLog()->logShortString(gotBuf->buf);
 			bool gotCMD = isCmd(gotBuf->buf, RN52_CMD_BEGIN);
-			rx_mail_box.free(gotBuf);
+			serialRX.free(gotBuf);
 
 			if (gotCMD) {
 				for (;;) {
@@ -171,7 +124,7 @@ void RN52::run() {
 							title[0] = 0;
 							artist[0] = 0;
 							while (true) {
-								gotBuf = waitForRXLine(100);
+								gotBuf = serialRX.waitForRXLine(100);
 								if (gotBuf) {
 									lines++;
 									// The strings after Title= and Artist= seem to be limited to 60 chars,
@@ -185,7 +138,7 @@ void RN52::run() {
 									} else {
 //										getLog()->logShortString(gotBuf->buf);
 									}
-									rx_mail_box.free(gotBuf);
+									serialRX.free(gotBuf);
 								} else {
 //									getLog()->log("track info response %d lines\r\n", lines);
 									break;
@@ -195,7 +148,7 @@ void RN52::run() {
 						} else if (isCmd(cmd, RN52_CMD_DETAILS)) { // Gather details until timeout
 							int lines = 0;
 							while (true) {
-								gotBuf = waitForRXLine(100);
+								gotBuf = serialRX.waitForRXLine(100);
 								if (gotBuf) {
 									lines++;
 									if (isCmd(gotBuf->buf, "BTA=")) {
@@ -204,14 +157,14 @@ void RN52::run() {
 										title[sizeof(title) - 1] = 0;
 										getLog()->log(title);
 									}
-									rx_mail_box.free(gotBuf);
+									serialRX.free(gotBuf);
 								} else {
 //									getLog()->log("details response %d lines\r\n", lines);
 									break;
 								}
 							}
 						} else if (isCmd(cmd, RN52_CMD_QUERY)) {
-							gotBuf = waitForRXLine(500);
+							gotBuf = serialRX.waitForRXLine(500);
 							if (gotBuf) {
 //								getLog()->logShortString(gotBuf->buf);
 								if (strlen((char *) gotBuf->buf) != 6
@@ -219,13 +172,13 @@ void RN52::run() {
 												(char *) gotBuf->buf)) {
 									queueCommand(RN52_CMD_QUERY);
 								}
-								rx_mail_box.free(gotBuf);
+								serialRX.free(gotBuf);
 							}
 						} else {
-							gotBuf = waitForRXLine(500);
+							gotBuf = serialRX.waitForRXLine(500);
 							if (gotBuf) {
 //								getLog()->logShortString(gotBuf->buf);
-								rx_mail_box.free(gotBuf);
+								serialRX.free(gotBuf);
 							}
 						}
 					}
@@ -238,10 +191,10 @@ void RN52::run() {
 		}
 //		getLog()->log("Exiting cmd mode\r\n");
 		bt_cmd_pin.write(1);
-		gotBuf = waitForRXLine(500); // Get END or timeout
+		gotBuf = serialRX.waitForRXLine(500); // Get END or timeout
 		if (gotBuf) {
 //			getLog()->logShortString(gotBuf->buf);
-			rx_mail_box.free(gotBuf);
+			serialRX.free(gotBuf);
 		}
 	}
 }
