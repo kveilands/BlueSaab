@@ -41,12 +41,12 @@ void Bluetooth::vassistant() {
 	rn52.sendAVCRP(RN52::VASSISTANT);
 }
 
-void Bluetooth::visible() {
-	rn52.visible(true);
+void Bluetooth::discoverable() {
+	rn52.discoverable(true);
 }
 
-void Bluetooth::invisible() {
-	rn52.visible(false);
+void Bluetooth::connectable() {
+	rn52.discoverable(false);
 }
 
 void Bluetooth::reconnect() {
@@ -72,12 +72,12 @@ void Bluetooth::getDetails() {
 void Bluetooth::handleDebugChar(char c) {
 	switch (c) {
 		case 'V':
-			visible();
+			discoverable();
 			getLog()->log("Switching to discoverable mode\r\n");
 			break;
 		case 'I':
-			invisible();
-			getLog()->log("Switching to non-discoverable/connectable mode\r\n");
+			connectable();
+			getLog()->log("Switching to connectable/non-discoverable mode\r\n");
 			break;
 		case 'C':
 			reconnect();

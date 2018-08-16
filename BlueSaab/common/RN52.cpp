@@ -271,8 +271,8 @@ void RN52::getTrackData() {
 	queueCommand(RN52_CMD_GET_TRACK_DATA);
 }
 
-void RN52::visible(bool visible) {
-	if (visible) {
+void RN52::discoverable(bool discoverable) {
+	if (discoverable) {
 		queueCommand(RN52_CMD_DISCOVERY_ON);
 	} else {
 		queueCommand(RN52_CMD_DISCOVERY_OFF);

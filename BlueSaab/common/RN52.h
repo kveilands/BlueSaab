@@ -65,7 +65,7 @@ public:
 	void resetPdl();
 	void getDetails();
 	void getTrackData();
-	void visible(bool visible);
+	void discoverable(bool discoverable);
 	void reboot();
 };
 

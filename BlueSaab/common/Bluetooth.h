@@ -24,7 +24,7 @@ class Bluetooth {
 	RN52 rn52;
 
 	void vassistant();
-	void invisible();
+	void connectable();
 	void reboot();
 	void getDetails();
 	void handleDebugChar(char c);
@@ -34,7 +34,7 @@ public:
 	void play();
 	void prev();
 	void next();
-	void visible();
+	void discoverable();
 	void reconnect();
 	void disconnect();
 	void resetPdl();
