@@ -64,6 +64,7 @@ void CDCStatus::onCDCControlFrame(CANMessage& frame) {
 			sidResource.activate();
 			saabCan.sendCanFrame(SOUND_REQUEST, soundCmd);
 			thread.signal_set(0x2);
+			bluetooth.connectable();
 			bluetooth.reconnect();
 			break;
 		case 0x14:
