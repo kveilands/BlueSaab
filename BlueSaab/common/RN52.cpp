@@ -259,6 +259,10 @@ void RN52::disconnect() {
 	queueCommand(RN52_CMD_DISCONNECT);
 }
 
+void RN52::resetPdl() {
+	queueCommand(RN52_CMD_RESET_PDL);
+}
+
 void RN52::getDetails() {
 	queueCommand(RN52_CMD_DETAILS);
 }

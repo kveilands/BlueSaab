@@ -49,7 +49,8 @@ public:
 
 	RN52()
 		: thread(osPriorityNormal, 512)
-		, serial(PA_9, PA_10, 115200) // UART1 Tx/Rx
+//		, serial(PA_9, PA_10, 115200) // UART1 Tx/Rx for v6.0
+		, serial(PB_10, PB_11, 115200) // UART3 Tx/Rx for v6.1
 		, serialRX(serial)
 		, a2dpConnected(false)
 		, bt_cmd_pin(PA_7)
@@ -61,6 +62,7 @@ public:
 
 	void reconnectLast();
 	void disconnect();
+	void resetPdl();
 	void getDetails();
 	void getTrackData();
 	void visible(bool visible);

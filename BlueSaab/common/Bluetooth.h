@@ -37,6 +37,7 @@ public:
 	void visible();
 	void reconnect();
 	void disconnect();
+	void resetPdl();
 };
 
 extern Bluetooth bluetooth;

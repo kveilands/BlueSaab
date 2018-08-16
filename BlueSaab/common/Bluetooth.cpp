@@ -57,6 +57,10 @@ void Bluetooth::disconnect() {
 	rn52.disconnect();
 }
 
+void Bluetooth::resetPdl() {
+	rn52.resetPdl();
+}
+
 void Bluetooth::reboot() {
 	rn52.reboot();
 }
@@ -107,6 +111,10 @@ void Bluetooth::handleDebugChar(char c) {
 			getDetails();
 			getLog()->log("Getting details\r\n");
 			break;
+		case 'u':
+			resetPdl();
+			getLog()->log("Resetting PDL\r\n");
+			break;
 		case 'H':
 			getLog()->log("Commands:\r\n"
 				"V - Switch to discoverable mode\r\n"
@@ -119,7 +127,8 @@ void Bluetooth::handleDebugChar(char c) {
 				"A - Invoke voice assistant\r\n"
 				"B - Reboot the RN52 module\r\n"
 				"H - Show this list of commands\r\n"
-				"d - Get RN52 details\r\n");
+				"d - Get RN52 details\r\n"
+				"u - Reset PDL (Paired Devices List)\r\n");
 			break;
 		default:
 			break;

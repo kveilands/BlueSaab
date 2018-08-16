@@ -30,9 +30,10 @@
 #define RN52_CMD_VOLDOWN            "AV-\r"
 #define RN52_CMD_DISCOVERY_ON       "@,1\r"
 #define RN52_CMD_DISCOVERY_OFF      "@,0\r"
+#define RN52_CMD_RESET_PDL          "U\r"               // Reset Paired Device List (PDL)
 
 // RN52 settings commands
-#define RN52_SET_IDLE_TIMEOUT       "S^,300\r"          // Shutdown module after 10 minutes of idle time (not connected)
+#define RN52_SET_IDLE_TIMEOUT       "S^,600\r"          // Shutdown module after 10 minutes of idle time (not connected)
 #define RN52_SET_DISCOVERY_MASK     "SD,04\r"           // Enable A2DP/AVRCP profile in discovery mask
 #define RN52_SET_CONNECTION_MASK    "SK,04\r"           // Enable A2DP/AVRCP profile in connection mask
 #define RN52_SET_COD                "SC,200420\r"       // Sets "CoD" (Class of Device)
