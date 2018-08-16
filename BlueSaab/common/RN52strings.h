@@ -23,8 +23,8 @@
 #define RN52_CMD_EXIT               "END\r\n"
 #define RN52_CMD_QUERY              "Q\r"
 #define RN52_CMD_DETAILS            "D\r"
-#define RN52_CMD_RECONNECTLAST      "B,06\r"
-#define RN52_CMD_DISCONNECT         "K,06\r"
+#define RN52_CMD_RECONNECTLAST      "B,04\r"
+#define RN52_CMD_DISCONNECT         "K,04\r"
 #define RN52_CMD_REBOOT             "R,1\r"
 #define RN52_CMD_VOLUP              "AV+\r"
 #define RN52_CMD_VOLDOWN            "AV-\r"
@@ -32,12 +32,11 @@
 #define RN52_CMD_DISCOVERY_OFF      "@,0\r"
 
 // RN52 settings commands
-#define RN52_SET_PAIR_TIMEOUT       "S^,0\r"            // Shutdown module if pairing doesn't happen. 0 means don't enable this feature
-#define RN52_SET_DISCOVERY_MASK     "SD,06\r"           // A2DP/AVRCP + SPP profiles
-#define RN52_SET_CONNECTION_MASK    "SK,06\r"           // A2DP/AVRCP + SPP profiles
+#define RN52_SET_IDLE_TIMEOUT       "S^,300\r"          // Shutdown module after 10 minutes of idle time (not connected)
+#define RN52_SET_DISCOVERY_MASK     "SD,04\r"           // Enable A2DP/AVRCP profile in discovery mask
+#define RN52_SET_CONNECTION_MASK    "SK,04\r"           // Enable A2DP/AVRCP profile in connection mask
 #define RN52_SET_COD                "SC,200420\r"       // Sets "CoD" (Class of Device)
 #define RN52_SET_DEVICE_NAME        "SN,BlueSaab v6\r"  // Broadcasted and shown in audio source's settings
-#define RN52_SET_BAUDRATE_9600      "SU,01\r"           // Enables serial communications on RN52 @ 9600bps
 #define RN52_SET_MAXVOL             "SS,0F\r"           // Sets the volume gain to MAX level 15 (default 11)
 #define RN52_SET_EXTENDED_FEATURES  "S%,1084\r"
 /*

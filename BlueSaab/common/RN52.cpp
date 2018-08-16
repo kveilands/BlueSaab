@@ -59,13 +59,14 @@ void RN52::initialize() {
 	queueCommand(RN52_SET_DEVICE_NAME);
 	queueCommand(RN52_SET_EXTENDED_FEATURES);
 	queueCommand(RN52_SET_MAXVOL);
-	queueCommand(RN52_SET_PAIR_TIMEOUT);
+	queueCommand(RN52_SET_IDLE_TIMEOUT);
 	reboot();
 	Thread::wait(5000);
 	getLog()->log("RN52 configuration completed!\r\n");
 
 	bt_event_pin.fall(callback(this, &RN52::onGPIO2));
 }
+
 
 int RN52::queueCommand(const char *cmd) {
 //	getLog()->log("queue: %s\r\n", (int) cmd);
