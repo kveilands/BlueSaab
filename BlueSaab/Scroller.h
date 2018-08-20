@@ -46,7 +46,7 @@ public:
 		int s_len = strlen(s);
 		if (to_cut >= s_len) {
 			to_cut -= s_len;
-			return false;
+			return true;
 		}
 		int start_pos = to_cut;
 		to_cut = 0;
@@ -68,8 +68,9 @@ class Scroller {
 
 	// These are set from the Bluetooth thread, and used from CAN ISR. So they need protection.
 	char title[TITLE_BUF_SIZE];
-	char artist[ARTIST_BUF_SIZE];
+	char text[ARTIST_BUF_SIZE + 3 + TITLE_BUF_SIZE + 3 + 1];
 	int position;
+	int text_len;
 	Semaphore info_lock; // mbed docs say a mutex cannot be used in ISRs, so we'll use a semaphore
 
 public:
