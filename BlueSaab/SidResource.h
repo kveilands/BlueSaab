@@ -22,6 +22,8 @@
 #include "MessageSender.h"
 #include "Scroller.h"
 
+#define TEXT_CONTROL_ENABLED			1
+
 class SidResource {
 	unsigned char sidMessageGroup[3][8];
 	MessageSender textSender;
@@ -60,6 +62,8 @@ public:
 	void ihuRequestReceived(CANMessage& frame);
 };
 
-extern SidResource sidResource;
+#if (TEXT_CONTROL_ENABLED == 1)
+	extern SidResource sidResource;
+#endif
 
 #endif /* SAAB_CDC_SIDRESOURCE_H_ */

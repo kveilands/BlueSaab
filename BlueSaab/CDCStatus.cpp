@@ -61,14 +61,18 @@ void CDCStatus::onCDCControlFrame(CANMessage& frame) {
 		switch (frame.data[1]) {
 		case 0x24:
 			cdcActive = true;
-			sidResource.activate();
+			#if (TEXT_CONTROL_ENABLED == 1)
+				sidResource.activate();
+			#endif
 			saabCan.sendCanFrame(SOUND_REQUEST, soundCmd);
 			thread.signal_set(0x2);
 			bluetooth.connectable();
 			bluetooth.reconnect();
 			break;
 		case 0x14:
-			sidResource.deactivate();
+			#if (TEXT_CONTROL_ENABLED == 1)
+				sidResource.deactivate();
+			#endif
 			cdcActive = false;
 			thread.signal_set(0x2);
 			bluetooth.disconnect();
