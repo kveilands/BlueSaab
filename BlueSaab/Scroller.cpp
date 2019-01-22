@@ -50,7 +50,8 @@ void Scroller::set_info(const char *artist_,const char *title_) {
 	text_len = strlen(text);
 	if (text_len > 12) {
 		// It doesn't fit, we'll need to scroll, so add a dash at the end
-		strcat(text, " - ");
+		// strcat(text, " - ");
+		strcat(text, " ");
 		text_len += 3;
 	}
 

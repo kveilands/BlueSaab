@@ -52,9 +52,9 @@ int main() {
 	buttons.initialize();
 	cdcStatus.initialize();
 
-#if (TEXT_CONTROL_ENABLED == 1)
-	sidResource.initialize();
-#endif
+	#if SID_TEXT_CONTROL_ENABLED
+		sidResource.initialize();
+	#endif
 
 	while (1) {
 		Thread::wait(1000);

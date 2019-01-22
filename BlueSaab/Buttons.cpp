@@ -69,7 +69,7 @@ void Buttons::onFrame(CANMessage& frame) {
 	if (frame.data[0] != 0x80)
 		return;
 
-#if (TEXT_CONTROL_ENABLED == 1)
+#if SID_TEXT_CONTROL_ENABLED
 	sidResource.requestDriverBreakthrough();
 #endif
 

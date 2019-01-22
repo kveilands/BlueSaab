@@ -61,7 +61,7 @@ void CDCStatus::onCDCControlFrame(CANMessage& frame) {
 		switch (frame.data[1]) {
 		case 0x24:
 			cdcActive = true;
-			#if (TEXT_CONTROL_ENABLED == 1)
+			#if SID_TEXT_CONTROL_ENABLED
 				sidResource.activate();
 			#endif
 			saabCan.sendCanFrame(SOUND_REQUEST, soundCmd);
@@ -70,7 +70,7 @@ void CDCStatus::onCDCControlFrame(CANMessage& frame) {
 			bluetooth.reconnect();
 			break;
 		case 0x14:
-			#if (TEXT_CONTROL_ENABLED == 1)
+			#if SID_TEXT_CONTROL_ENABLED
 				sidResource.deactivate();
 			#endif
 			cdcActive = false;

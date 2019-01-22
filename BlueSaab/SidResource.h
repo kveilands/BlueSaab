@@ -17,12 +17,12 @@
 
 #ifndef SAAB_CDC_SIDRESOURCE_H_
 #define SAAB_CDC_SIDRESOURCE_H_
+#define SID_TEXT_CONTROL_ENABLED			1
 
 #include <rtos.h>
 #include "MessageSender.h"
 #include "Scroller.h"
 
-#define TEXT_CONTROL_ENABLED			1
 
 class SidResource {
 	unsigned char sidMessageGroup[3][8];
@@ -62,8 +62,8 @@ public:
 	void ihuRequestReceived(CANMessage& frame);
 };
 
-#if (TEXT_CONTROL_ENABLED == 1)
-	extern SidResource sidResource;
-#endif
+	#if SID_TEXT_CONTROL_ENABLED
+		extern SidResource sidResource;
+	#endif
 
 #endif /* SAAB_CDC_SIDRESOURCE_H_ */

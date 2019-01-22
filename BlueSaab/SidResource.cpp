@@ -16,7 +16,6 @@
  */
 
 #include "SidResource.h"
-//#include "CDC.h"
 #include "MessageSender.h"
 #include "Scroller.h"
 #include "SaabCan.h"
