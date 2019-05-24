@@ -1,4 +1,9 @@
 .DS_Store
+/BlueSaab/.cproject
+/BlueSaab/.project
+/BlueSaab/necessary_software.p2f
+/BlueSaab/NUCLEO_F103RB_pyocd_settings.launch
 /BlueSaab/BUILD/
 /BlueSaab/.hg/
 /BlueSaab/.settings/
+
