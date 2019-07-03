@@ -34,6 +34,7 @@
 
 // RN52 settings commands
 #define RN52_SET_IDLE_TIMEOUT       "S^,600\r"          // Shutdown module after 10 minutes of idle time (not connected)
+#define RN52_SET_PAIRING_TIMEOUT    "STP,10\r"          // Set pairing timeout to 10 seconds; upon failure switch to next device on PDL
 #define RN52_SET_DISCOVERY_MASK     "SD,04\r"           // Enable A2DP/AVRCP profile in discovery mask
 #define RN52_SET_CONNECTION_MASK    "SK,04\r"           // Enable A2DP/AVRCP profile in connection mask
 #define RN52_SET_COD                "SC,200420\r"       // Sets "CoD" (Class of Device)
