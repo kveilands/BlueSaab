@@ -86,7 +86,7 @@ void Buttons::onFrame(CANMessage& frame) {
 		case Buttons::TRACK_MINUS:
 			bluetooth.prev();
 			break;
-		case Buttons::SEEK_EXTRA_LONG:
+		case Buttons::SEEK_LONG:
 			bluetooth.discoverable();
 			break;
 		default:
