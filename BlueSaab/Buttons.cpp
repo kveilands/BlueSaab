@@ -32,10 +32,14 @@ Buttons::Button decode(unsigned char data1, unsigned char data2) {
 	switch (data1) {
 	case 0x59: // NXT
 		return Buttons::NXT;
+	case 0x45: // SEEK+ button long press on IHU
+		return Buttons::SEEK_PLUS_LONG;
+	case 0x46: // SEEK- button long press on IHU
+		return Buttons::SEEK_MINUS_LONG;
 	case 0x84: // SEEK button (middle) long press on IHU
-		return Buttons::SEEK_LONG;
+		return Buttons::SEEK_MIDDLE_LONG;
 	case 0x88: // > 2 second long press of SEEK button (middle) on IHU
-		return Buttons::SEEK_EXTRA_LONG;
+		return Buttons::SEEK_MIDDLE_EXTRA_LONG;
 	case 0x76: // Random ON/OFF (Long press of CD/RDM button)
 		return Buttons::RANDOM;
 	case 0xB1: // Pause ON
@@ -86,8 +90,14 @@ void Buttons::onFrame(CANMessage& frame) {
 		case Buttons::TRACK_MINUS:
 			bluetooth.prev();
 			break;
-		case Buttons::SEEK_LONG:
+		case Buttons::IHU1:
 			bluetooth.discoverable();
+			break;
+		case Buttons::IHU3:
+			bluetooth.reconnect();
+			break;
+		case Buttons::IHU6:
+			bluetooth.disconnect();
 			break;
 		default:
 			break;
